@@ -1,0 +1,4 @@
+GrailsHospital
+==============
+
+Our Grails playground
