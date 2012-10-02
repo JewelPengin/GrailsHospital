@@ -2,7 +2,7 @@ package hospital
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
-class MainNavService {
+class NavService {
 
     def grailsApplication
 
