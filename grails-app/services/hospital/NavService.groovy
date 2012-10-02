@@ -8,12 +8,15 @@ class NavService {
 
     def get() {
         def links = [
-            [code: 'home', name: "Home", title: "Home", url: "/", active: true, children: []]
+            [code: 'home', name: "Home", title: "Home", url: "/", active: true, children: [
+                [code: 'home', name: "Homepage 1", title: "Home 1", url: "/", active: true, children: []]
+                , [code: 'home', name: "Homepage 2", title: "Home 2", url: "/", active: true, children: []]
+            ]]
         ]
 
         def controllers = grailsApplication.controllerClasses.sort { it.fullName }
         controllers.eachWithIndex {item, idx ->
-            links.add([code: "name", name: item.name, title: item.fullName, url: item.logicalPropertyName, active: true, children: []])
+            links.add([code: item.fullName, name: item.name, title: item.fullName, url: item.logicalPropertyName, active: true, children: []])
         }
 
 
@@ -21,7 +24,7 @@ class NavService {
     }
 
     def getCurrentPageNav(request, nav = get()) {
-        nav.each {item ->
+        for (item in nav) {
             if (item.url == request.request.getRequestURI()) {
                 return item
             }

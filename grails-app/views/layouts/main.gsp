@@ -9,7 +9,7 @@
 <body>
 <header id="toolbar">
     <nav id="main-nav">
-        <g:render template="/shared/mainNav" model="[nav: mainNav]" />
+        <g:render template="/shared/nav" model="[nav: mainNav]" />
         <ul>
             <li><a href="/">logout</a></li>
         </ul>

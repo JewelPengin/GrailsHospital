@@ -4,7 +4,7 @@
             <g:if test="${ link.active }">
                 <li <g:if test="${ !link.children.isEmpty() }">class="has-dd"</g:if>>
                     <a href="${ link.url }" title="${ link.title }">${ link.name }</a>
-                    <g:render template="/shared/mainNav" model="[nav: link.children]" />
+                    <g:render template="/shared/nav" model="[nav: link.children]" />
                 </li>
             </g:if>
         </g:each>

@@ -2,13 +2,14 @@ package hospital
 
 class PageFilters {
 
-    def mainNavService
+    def navService
 
     def filters = {
         all(controller:'*', action:'*') {
             after = { Map model ->
                 if (model != null) {
-                    model.mainNav = mainNavService.get()
+                    model.mainNav = navService.get()
+                    model.pageNav = navService.getCurrentPageNav(request)
                 }
             }
         }
