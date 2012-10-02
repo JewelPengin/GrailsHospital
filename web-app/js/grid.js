@@ -5,7 +5,7 @@
 				data: []
 				, dataUrl: ''
 				, columns: [
-					{name: 'Column 1', key: 'column_1', sortable: false, order: 'asc'}
+					{label: 'No Columns Configured', name: 'no_columns', sortable: false, order: 'asc'}
 				]
 				, reorderableColumns: false
                 , url: ''
@@ -20,7 +20,7 @@
 
             for (var c = 0; c < meta.columns.length; c++) {
                 thead.append('<th>' +
-                    meta.columns[c].name +
+                    meta.columns[c].label +
                     (meta.columns[c].sortable ? ' <span class="order ' + meta.columns[c].order  + '"></span>' : '') +
                 '</th>');
             }
@@ -95,7 +95,7 @@
                 var lastRow = ((i + 1) == meta.data.length);
                 for (var c = 0; c < meta.columns.length; c++) {
                     row += '<td' + (lastRow ? ' class="last-row"' : '') + '>'
-                    row += meta.data[i][meta.columns[c].key] + '</td>';
+                    row += meta.data[i][meta.columns[c].name] + '</td>';
                 }
                 tbody.append('<tr class="' + ((i + 1) % 2 ? 'even' : 'odd') + '">' + row + '</tr>');
             }

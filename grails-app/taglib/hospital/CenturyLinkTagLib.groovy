@@ -27,6 +27,9 @@ class CenturyLinkTagLib {
                     \$('#${attrs.id}').grid({
                         data: ${ attrs.data.encodeAsJSON() }
                         , columns: ${ pageScope.gridColumns.encodeAsJSON() }
+                        , url: '${ (attrs.url ?: '').encodeAsJavaScript() }'
+                        , dataUrl: '${ (attrs.dataUrl ?: '').encodeAsJavaScript() }'
+                        , reorderableColumns: ${ attrs.reorderable ? 'true' : 'false'}
                     });
                 });
             """

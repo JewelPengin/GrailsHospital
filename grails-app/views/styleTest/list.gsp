@@ -20,8 +20,11 @@
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
-            <g:grid name="MyGrid" data="${[]}">
+            <g:grid name="MyGrid" data="${list}" url="/styleTest/show?id={{id}}">
+                <g:column name="name" label="My Name Column" />
                 <g:column name="column1" />
+                <g:column name="column2" />
+                <g:column name="column3" />
             </g:grid>
         </section>
 
