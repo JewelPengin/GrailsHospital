@@ -5,18 +5,24 @@
 		<title>View Testing</title>
         <script>
             $(function(){
-                $('#mytable').grid({}, []);
+                $('#mytable').grid({
+                    data: [
+                        {name: 'Jonathan', occupation: 'Developer'}
+                        , {name: 'Jonathan', occupation: 'Developer'}
+                        , {name: 'Jonathan', occupation: 'Developer 2'}
+                    ]
+                    , columns: [
+                        {name: 'Column 1', key: 'name', sortable: true, order: 'asc'}
+                        , {name: 'Column 2', key: 'occupation', sortable: false, order: 'asc'}
+                    ]
+                });
             });
         </script>
 	</head>
 	<body>
         <header>
             <nav id="sub-nav">
-                <ul>
-                    <li><a href="/">sub item 1</a></li>
-                    <li><a href="/">sub item 2</a></li>
-                    <li><a href="/">sub item 3</a></li>
-                </ul>
+                <g:render template="/shared/nav" model="[nav: pageNav.children]" />
             </nav>
             <h1>Page Title</h1>
         </header>
