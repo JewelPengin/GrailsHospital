@@ -13,7 +13,7 @@ class MainNavService {
 
         def controllers = grailsApplication.controllerClasses.sort { it.fullName }
         controllers.eachWithIndex {item, idx ->
-            links.add([code: "name", name: item.fullName, title: item.fullName, url: item.logicalPropertyName, active: true, children: []])
+            links.add([code: "name", name: item.name, title: item.fullName, url: item.logicalPropertyName, active: true, children: []])
         }
 
 
