@@ -24,7 +24,7 @@
             <nav id="sub-nav">
                 <g:render template="/shared/nav" model="[nav: pageNav.children]" />
             </nav>
-            <h1>Page Title</h1>
+            <h1><%= pageNav.title %></h1>
         </header>
 
         <section>
