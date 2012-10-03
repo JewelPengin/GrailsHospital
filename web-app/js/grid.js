@@ -1,164 +1,5 @@
 (function($) {
-	var methods = {
-		init: function(passedConfig) {
-			var meta = $.extend({
-				data: []
-				, dataUrl: ''
-				, columns: [
-					{label: 'No Columns Configured', name: 'no_columns', renderer: 'string', sortable: false, order: 'asc'}
-				]
-				, reorderableColumns: false
-                , url: ''
-			}, passedConfig);
-
-            this.css('padding-bottom', '1px'); // hack for missing bottom border?
-
-			this.empty();
-			this.append('<table><thead><tr></tr></thead><tbody></tbody><tfoot></tfoot></table>');
-			meta.table = this.find('table:first');
-            var thead = meta.table.find('thead > tr');
-
-            // column loop - do as much as you can here to cut back re-looping
-            for (var c = 0; c < meta.columns.length; c++) {
-                var col = meta.columns[c];
-
-                if (col.name === undefined) {
-                    throw('grid failed - cannot have a column without a name');
-                }
-
-                col.label = col.label || col.name;
-                col.renderer = col.renderer || 'string';
-                col.sortable = col.sortable || true;
-                col.order = col.order || 'asc';
-
-                if (typeof col.renderer === 'string') {
-                    col.renderer = getRenderer(col);
-                }
-
-                thead.append('<th>' +
-                    col.label +
-                    (col.sortable ? ' <span class="order ' + col.order  + '"></span>' : '') +
-                '</th>');
-            }
-
-			if (meta.reorderableColumns) {
-                meta.table.addClass('reorderable');
-                meta.table.sortable({
-					items: 'th'
-				});
-			}
-
-            meta.table.on('click', 'th', function() {
-				var self = $(this);
-
-				if (meta.dataUrl != '') {
-					$.ajax({
-						url: meta.dataUrl
-						, type: 'POST'
-						, data: {}
-					}).done(function() {
-						// render data
-					}).fail(function() {
-						// do something productive.
-					})
-				}
-
-			}).on('click', 'td', function() {
-				var self = $(this);
-				var rowIdx = 0;
-				var url = '';
-
-				// figure out my row idx
-                meta.table.find('tr').each(function(idx) {
-					if ($(this).find(self).length) {
-						rowIdx = idx - 1;
-						return false;
-					}
-				});
-
-				if (self.data('url') !== undefined) {
-					url = self.data('url');
-				} else if (meta.url != '') {
-					url = meta.url;
-				}
-
-                url = url.replace(/(\{|%7B){2}(.*?)(\}|%7D){2}/gi, function(v, c1, c2, c3) {
-                    var column = c2;
-					if (meta.data.length - 1 >= rowIdx && typeof meta.data[rowIdx][column] != 'undefined') {
-						return meta.data[rowIdx][column];
-					}
-
-					return '';
-				});
-
-				if (url != '') {
-					window.location = url;
-				}
-			});
-
-            this.data('grid', meta);
-
-            methods.render.apply(this);
-
-			return this;
-		}
-		, render: function() {
-			var meta = this.data('grid');
-            var tbody = meta.table.find('tbody');
-            tbody.empty();
-
-            for (var i = 0; i < meta.data.length; i++) {
-                var row = '';
-                var lastRow = ((i + 1) == meta.data.length);
-                for (var c = 0; c < meta.columns.length; c++) {
-                    row += '<td' + (lastRow ? ' class="last-row"' : '') + '>' +
-                        meta.columns[c].renderer(meta.data[i][meta.columns[c].name], {}) +
-                    '</td>';
-                }
-                tbody.append('<tr class="' + ((i + 1) % 2 ? 'even' : 'odd') + '">' + row + '</tr>');
-            }
-		}
-		, addRow: function(data, at, render) {
-            at = at || meta.data.length
-            render = render || true
-
-            if (typeof at == 'boolean') {
-                render = at
-                at = meta.data.length
-            }
-
-			// allow us to pass in multiple rows
-			if (data instanceof Array) {
-				for (var i = 0; i < data.length; i++) {
-					addRow(data, at + i, false);
-				}
-			} else {
-				var meta = this.data('grid');
-				// default "at" to the end of the array
-
-				// add the data
-				meta.data.splice(at, 0, data);
-
-				// update the namespace
-				this.data('grid', meta);
-			}
-
-            if (render) {
-                methods.render.apply(this);
-            }
-
-			return this;
-		}
-        , sort: function(column, direction) {
-            var meta = this.data('grid');
-            var columnData = getColumnByName(meta.columns, column);
-
-            if (columnData != null) {
-
-            }
-        }
-    }
-    , renderers = {
+    var renderers = {
         string: function(str, config) {
             return str;
         }
@@ -236,6 +77,34 @@
         }
     }
 
+    function getRenderer(col) {
+        var r = renderers[col.renderer.toLowerCase()] || window[col.renderer]
+            , obj = window
+            , key
+            , parts
+            , i
+            ;
+        if (!$.isFunction(r)) {
+            // eval is evil so recurse through window if we can
+            parts = col.renderer.split('.');
+            for (i = 0; i < parts.length; i++) {
+                key = parts[i];
+                if (obj[key] !== undefined) {
+                    obj = obj[key];
+                    if (i === parts.length - 1 && $.isFunction(obj)) {
+                        r = obj;
+                    }
+                } else {
+                    break;
+                }
+            }
+            if (!$.isFunction(r)) {
+                r = renderers[col.type];
+            }
+        }
+        return r;
+    }
+
     function parseDate(value) {
         var parts = value.split('.');
         // Assumes the data coming in looks like one of the following:
@@ -276,51 +145,237 @@
         return s.substr(o, 2);
     }
 
-    function getRenderer(col) {
-        var r = renderers[col.renderer.toLowerCase()] || window[col.renderer]
-            , obj = window
-            , key
-            , parts
-            , i
+	$.fn.grid = function(config) {
+        var render
+            , getSortFunction
         ;
-        if (!$.isFunction(r)) {
-            // eval is evil so recurse through window if we can
-            parts = col.renderer.split('.');
-            for (i = 0; i < parts.length; i++) {
-                key = parts[i];
-                if (obj[key] !== undefined) {
-                    obj = obj[key];
-                    if (i === parts.length - 1 && $.isFunction(obj)) {
-                        r = obj;
-                    }
+
+        config = $.extend({
+            data: []
+            , dataUrl: ''
+            , columns: [
+                {label: 'No Columns Configured', name: 'no_columns', renderer: 'string', sortable: false, order: 'asc'}
+            ]
+            , reorderableColumns: false
+            , url: ''
+        }, config);
+
+        getSortFunction = function(key, asc) {
+            var direction = (asc) ? 1 : -1
+                , type = cols[key].type
+            ;
+            switch(type) {
+                case 'string':
+                case 'blob':
+                    return function(a, b) {
+                        a = a[key].toLowerCase();
+                        b = b[key].toLowerCase();
+                        if (a < b) {
+                            return direction * -1;
+                        }
+                        if (a > b) {
+                            return direction;
+                        }
+                        return 0;
+                    };
+                case 'number':
+                case 'bit':
+                    return function(a, b) {
+                        a = parseFloat(a[key]) || 0;
+                        b = parseFloat(b[key]) || 0;
+                        if (a < b) {
+                            return direction * -1;
+                        }
+                        if (a > b) {
+                            return direction;
+                        }
+                        return 0;
+                    };
+                case 'date':
+                case 'time':
+                case 'datetime':
+                    return function(a, b) {
+                        a = parseDate(a[key]);
+                        b = parseDate(b[key]);
+                        if (a < b) {
+                            return direction * -1;
+                        }
+                        if (a > b) {
+                            return direction;
+                        }
+                        return 0;
+                    };
+            }
+            return function(a, b) {
+                a = a[key];
+                b = b[key];
+                if (!isNaN(a) && !isNaN(b)) {
+                    a = parseInt(a, 10);
+                    b = parseInt(b, 10);
                 } else {
-                    break;
+                    a = a.toLowerCase();
+                    b = b.toLowerCase();
+                }
+                if (a < b) {
+                    return direction * -1;
+                }
+                if (a > b) {
+                    return direction;
+                }
+                return 0;
+            };
+        }
+
+        render = function() {
+            var tbody = config.table.find('tbody');
+            tbody.empty();
+
+            for (var i = 0; i < config.data.length; i++) {
+                var row = '';
+                var lastRow = ((i + 1) == config.data.length);
+                for (var c = 0; c < config.columns.length; c++) {
+                    row += '<td' + (lastRow ? ' class="last-row"' : '') + '>' +
+                        config.columns[c].renderer(config.data[i][config.columns[c].name], {}) +
+                        '</td>';
+                }
+                tbody.append('<tr class="' + ((i + 1) % 2 ? 'even' : 'odd') + '">' + row + '</tr>');
+            }
+        }
+
+        getColumnByName = function(col) {
+            for (var i = 0; i < config.columns.length; i++) {
+                if (config.columns[i].name == col) {
+                    return config.columns[i]
                 }
             }
-            if (!$.isFunction(r)) {
-                r = renderers[col.type];
-            }
-        }
-        return r;
-    }
 
-    function getColumnByName(columns, column) {
-        for (var i = 0; i < columns.length; i++) {
-            if (columns[i].name == column) {
-                return columns[i]
-            }
+            return null
         }
 
-        return null
-    }
+        addRow = function(data, at, render) {
+            // default "at" to the end of the array
+            at = at || config.data.length;
+            render = render || true;
 
-	$.fn.grid = function(method) {
-		if (methods[method]) {
-			return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
-		} else if (typeof method === 'object' || !method) {
-			return methods.init.apply(this, arguments);
-		} else {
-			$.error( 'Method ' +  method + ' does not exist.' );
-		}
+            if (typeof at == 'boolean') {
+                render = at;
+                at = config.data.length;
+            }
+
+            // allow us to pass in multiple rows
+            if (data instanceof Array) {
+                for (var i = 0; i < data.length; i++) {
+                    addRow(data, at + i, false);
+                }
+            } else {
+                // add the data
+                config.data.splice(at, 0, data);
+            }
+
+            if (render) {
+                this.render();
+            }
+        }
+
+        sort = function(col, dir) {
+            config.sortedOn = col;
+            config.sortedAsc = !!(dir == 'asc');
+
+            config.data.sort(getSortFunction(config.sortedOn, config.sortedAsc));
+        }
+
+        // TODO: sort function
+
+        this.css('padding-bottom', '1px'); // hack for missing bottom border?
+
+        this.empty();
+        this.append('<table><thead><tr></tr></thead><tbody></tbody><tfoot></tfoot></table>');
+        config.table = this.find('table:first');
+        var thead = config.table.find('thead > tr');
+
+        // column loop - do as much as you can here to cut back re-looping
+        for (var c = 0; c < config.columns.length; c++) {
+            var col = config.columns[c];
+
+            if (col.name === undefined) {
+                throw('grid failed - cannot have a column without a name');
+            }
+
+            col.label = col.label || col.name;
+            col.type = col.type || 'string';
+            col.renderer = col.renderer || col.type;
+            col.sortable = col.sortable || true;
+            col.order = col.order || 'asc';
+
+            if (typeof col.renderer === 'string') {
+                col.renderer = getRenderer(col);
+            }
+
+            thead.append('<th>' +
+                col.label +
+                (col.sortable ? ' <span class="order ' + col.order  + '"></span>' : '') +
+                '</th>');
+        }
+
+        if (config.reorderableColumns) {
+            config.table.addClass('reorderable');
+            config.table.sortable({
+                items: 'th'
+            });
+        }
+
+        config.table.on('click', 'th', function() {
+            var self = $(this);
+
+            if (config.dataUrl != '') {
+                $.ajax({
+                    url: config.dataUrl
+                    , type: 'POST'
+                    , data: {}
+                }).done(function() {
+                        // render data
+                    }).fail(function() {
+                        // do something productive.
+                    })
+            }
+
+        }).on('click', 'td', function() {
+            var self = $(this);
+            var rowIdx = 0;
+            var url = '';
+
+            // figure out my row idx
+            config.table.find('tr').each(function(idx) {
+                if ($(this).find(self).length) {
+                    rowIdx = idx - 1;
+                    return false;
+                }
+            });
+
+            if (self.data('url') !== undefined) {
+                url = self.data('url');
+            } else if (config.url != '') {
+                url = config.url;
+            }
+
+            url = url.replace(/(\{|%7B){2}(.*?)(\}|%7D){2}/gi, function(v, c1, c2, c3) {
+                var column = c2;
+                if (config.data.length - 1 >= rowIdx && typeof config.data[rowIdx][column] != 'undefined') {
+                    return config.data[rowIdx][column];
+                }
+
+                return '';
+            });
+
+            if (url != '') {
+                window.location = url;
+            }
+        });
+
+        render();
+
+        this.data('grid', this);
+
+        return this;
 	}
 })(jQuery);
