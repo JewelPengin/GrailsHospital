@@ -66,9 +66,11 @@
 					url = meta.url;
 				}
 
-				url = url.replace(/\{\{(.*?)\}\}/gi, function(v, m) {
-					if (meta.data.length - 1 >= rowIdx && typeof meta.data[rowIdx][m] != 'undefined') {
-						return meta.data[rowIdx][m];
+                // I'd definitely rather not have the decodeURIComponent in there, but it's necessary at the moment. Pending a better solution or variable qualifier
+				url = url.replace(/(\{|%7B){2}(.*?)(\}|%7D){2}/gi, function(v, c1, c2, c3) {
+                    var column = c2
+					if (meta.data.length - 1 >= rowIdx && typeof meta.data[rowIdx][column] != 'undefined') {
+						return meta.data[rowIdx][column];
 					}
 
 					return '';
