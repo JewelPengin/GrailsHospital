@@ -20,12 +20,12 @@
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
-            <g:grid name="MyGrid" data="${list}" url="/styleTest/show?id={{id}}">
-                <g:column name="name" label="My Name Column" />
-                <g:column name="column1" />
-                <g:column name="column2" />
-                <g:column name="column3" />
-            </g:grid>
+            <cl:grid name="MyGrid" data="${list}" url="/styleTest/show?id={{id}}">
+                <cl:column name="name" label="My Name Column" />
+                <cl:column name="column1" />
+                <cl:column name="column2" />
+                <cl:column name="column3" />
+            </cl:grid>
         </section>
 
         <footer></footer>

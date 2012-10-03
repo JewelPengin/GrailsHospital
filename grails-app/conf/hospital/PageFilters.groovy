@@ -22,6 +22,7 @@ class PageFilters {
                 if (model != null) {
                     model.mainNav = navService.get()
                     model.pageNav = navService.getCurrentPageNav(request)
+                    model.customTags = [group: 0, depth: -1, tags: []]
                 }
             }
         }

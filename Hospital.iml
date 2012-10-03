@@ -55,6 +55,7 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.mozilla/rhino/jars/rhino-1.7R3.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.commons/commons-lang3/jars/commons-lang3-3.1.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/mysql/mysql-connector-java/jars/mysql-connector-java-5.1.20.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -62,6 +63,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="Hospital-grailsPlugins" />
+    <orderEntry type="library" name="grails-2.1.1" level="application" />
   </component>
 </module>
 

@@ -16,7 +16,7 @@ class NavService {
 
         def controllers = grailsApplication.controllerClasses.sort { it.fullName }
         controllers.eachWithIndex {item, idx ->
-            links.add([code: item.fullName, name: item.name, title: item.fullName, url: item.logicalPropertyName, active: true, children: []])
+            links.add([code: item.fullName, name: item.name, title: item.fullName, url: '/' + item.logicalPropertyName, active: true, children: []])
         }
 
 

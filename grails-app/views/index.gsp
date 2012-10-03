@@ -12,8 +12,8 @@
                         , {name: 'Jonathan', occupation: 'Developer 2'}
                     ]
                     , columns: [
-                        {name: 'Column 1', key: 'name', sortable: true, order: 'asc'}
-                        , {name: 'Column 2', key: 'occupation', sortable: false, order: 'asc'}
+                        {label: 'Column 1', name: 'name', sortable: true, order: 'asc'}
+                        , {label: 'Column 2', name: 'occupation', sortable: false, order: 'asc'}
                     ]
                 });
             });
