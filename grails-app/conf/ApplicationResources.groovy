@@ -12,6 +12,7 @@ modules = {
     grid {
         dependsOn 'core'
 
+        resource url: '/js/date.js'
         resource url: '/js/grid.js'
     }
 
