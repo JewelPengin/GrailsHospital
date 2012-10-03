@@ -1,5 +1,5 @@
 
-<%@ page import="hospital.StyleTest" %>
+<%@ page import="com.centurylink.hospital.StyleTest" %>
 <!doctype html>
 <html>
 	<head>
@@ -22,43 +22,43 @@
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
 			<ol class="property-list styleTest">
-			
+
 				<g:if test="${styleTestInstance?.column1}">
 				<li class="fieldcontain">
 					<span id="column1-label" class="property-label"><g:message code="styleTest.column1.label" default="Column1" /></span>
-					
+
 						<span class="property-value" aria-labelledby="column1-label"><g:fieldValue bean="${styleTestInstance}" field="column1"/></span>
-					
+
 				</li>
 				</g:if>
-			
+
 				<g:if test="${styleTestInstance?.column2}">
 				<li class="fieldcontain">
 					<span id="column2-label" class="property-label"><g:message code="styleTest.column2.label" default="Column2" /></span>
-					
+
 						<span class="property-value" aria-labelledby="column2-label"><g:fieldValue bean="${styleTestInstance}" field="column2"/></span>
-					
+
 				</li>
 				</g:if>
-			
+
 				<g:if test="${styleTestInstance?.column3}">
 				<li class="fieldcontain">
 					<span id="column3-label" class="property-label"><g:message code="styleTest.column3.label" default="Column3" /></span>
-					
+
 						<span class="property-value" aria-labelledby="column3-label"><g:fieldValue bean="${styleTestInstance}" field="column3"/></span>
-					
+
 				</li>
 				</g:if>
-			
+
 				<g:if test="${styleTestInstance?.name}">
 				<li class="fieldcontain">
 					<span id="name-label" class="property-label"><g:message code="styleTest.name.label" default="Name" /></span>
-					
+
 						<span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${styleTestInstance}" field="name"/></span>
-					
+
 				</li>
 				</g:if>
-			
+
 			</ol>
 			<g:form>
 				<fieldset class="buttons">

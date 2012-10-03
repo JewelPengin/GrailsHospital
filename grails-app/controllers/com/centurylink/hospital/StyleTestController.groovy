@@ -1,4 +1,4 @@
-package hospital
+package com.centurylink.hospital
 
 import org.springframework.dao.DataIntegrityViolationException
 

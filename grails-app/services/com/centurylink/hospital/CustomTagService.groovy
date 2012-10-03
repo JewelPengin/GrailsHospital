@@ -1,4 +1,4 @@
-package hospital
+package com.centurylink.hospital
 
 class CustomTagService {
     static scope = "request"

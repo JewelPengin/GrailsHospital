@@ -1,4 +1,4 @@
-<%@ page import="hospital.StyleTest" %>
+<%@ page import="com.centurylink.hospital.StyleTest" %>
 <!doctype html>
 <html>
 	<head>

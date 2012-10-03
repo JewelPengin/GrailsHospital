@@ -1,4 +1,4 @@
-package hospital
+package com.centurylink.hospital
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
