@@ -1,4 +1,4 @@
-package com.centurylink.hospital
+package com.centurylink.hospital.auth
 
 class Authority {
 

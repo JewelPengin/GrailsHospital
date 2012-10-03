@@ -89,3 +89,8 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 }
+
+//Added to project to accommodate spring security
+grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.centurylink.hospital.auth.Person'
+grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'com.centurylink.hospital.auth.PersonAuthority'
+grails.plugins.springsecurity.authority.className = 'com.centurylink.hospital.auth.Authority'

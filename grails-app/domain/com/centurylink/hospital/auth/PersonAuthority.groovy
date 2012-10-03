@@ -1,4 +1,4 @@
-package com.centurylink.hospital
+package com.centurylink.hospital.auth
 
 import org.apache.commons.lang.builder.HashCodeBuilder
 
