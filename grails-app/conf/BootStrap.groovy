@@ -8,7 +8,7 @@ class BootStrap {
 
     def init = { servletContext ->
         if(!Person.count()){
-            createDate()
+            createData()
         }
     }
     def destroy = {
