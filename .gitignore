@@ -12,3 +12,4 @@ out
 /web-app/WEB-INF/classes
 .idea/workspace.xml
 .DS_Store
+*.db
