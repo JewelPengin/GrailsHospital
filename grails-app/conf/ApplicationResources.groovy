@@ -4,7 +4,10 @@ modules = {
 
         resource url: '/css/reset.less', attrs:[rel: "stylesheet/less", type:'css'], bundle:'bundle_core'
         resource url: '/css/main.less', attrs:[rel: "stylesheet/less", type:'css'], bundle:'bundle_core'
-        resource url: '/css/cupertino/jquery-ui-1.8.23.custom.css'
+        resource url: '/css/ie7.less', attrs:[rel: "stylesheet/less", type:'css'],
+            wrapper: { s -> "<!--[if lt IE 8]>$s<![endif]-->" }
+
+        resource url: '/css/testing.css'
 
         resource url: '/js/toolbar.js'
     }

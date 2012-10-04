@@ -260,6 +260,7 @@
 
             if (usePaging) {
                 if (!pagingControls.length) {
+                    // TODO: I feel like this could be done more efficiently, but something for later.
                     if (config.pagingLocation == 'bottom') {
                         config.table.parent().append('<div class="grid-paging"></div>');
                     } else {
