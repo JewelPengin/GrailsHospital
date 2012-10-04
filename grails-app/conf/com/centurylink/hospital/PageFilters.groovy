@@ -1,12 +1,21 @@
 package com.centurylink.hospital
 
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+
 class PageFilters {
 
     def navService
+    def springSecurityService
 
     def filters = {
         all(controller:'*', action:'*') {
             before = {
+
+                if (!springSecurityService.isLoggedIn()
+                    && controllerName != 'login') {
+                    redirect controller: 'login', action: 'auth'
+                }
+
                 /* very experimental code for getting the columns of a linked domain class - JWL
                 if (controllerName != null) {
                     def controllerChars = controllerName.toCharArray()
