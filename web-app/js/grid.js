@@ -415,7 +415,7 @@
                     config.data = returnData.list.list; // odd formatting I know, but it's what I decided on.
                     render();
                 }).fail(function() {
-                    console.log('we failed!');
+                    alert('Failed loading grid data.');
                 })
             }
 
@@ -495,8 +495,6 @@
             if ((config.sortedOn || '') == name) {
                 sortDir = oppositeSort[config.sortedDir];
             }
-
-            console.log(sortDir);
 
             sortIndicator.removeClass('asc desc').addClass(sortDir);
 
