@@ -1,8 +1,11 @@
 package com.centurylink.hospital
-
+import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
+@Secured (['ROLE_USER'])
+
 class DoctorController {
+
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
