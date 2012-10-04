@@ -1,5 +1,4 @@
 import grails.converters.JSON
-import com.centurylink.hospital.*
 
 import javax.servlet.http.HttpServletResponse
 

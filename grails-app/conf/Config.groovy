@@ -94,3 +94,4 @@ log4j = {
 grails.plugins.springsecurity.userLookup.userDomainClassName = 'com.centurylink.hospital.auth.Person'
 grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'com.centurylink.hospital.auth.PersonAuthority'
 grails.plugins.springsecurity.authority.className = 'com.centurylink.hospital.auth.Authority'
+grails.plugin.springsecurity.successHandler.defaultTargetUrl=""
