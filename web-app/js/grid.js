@@ -284,7 +284,7 @@
             config.data.sort(getSortFunction(config.sortedOn, config.sortedAsc));
         }
 
-        // TODO: sort function
+        /******** init section ********/
 
         this.css('padding-bottom', '1px'); // hack for missing bottom border?
 
@@ -311,10 +311,13 @@
                 col.renderer = getRenderer(col);
             }
 
-            thead.append('<th>' +
+            var header = $('<th>' +
                 col.label +
                 (col.sortable ? ' <span class="order ' + col.order  + '"></span>' : '') +
-                '</th>');
+            '</th>');
+            header.data('meta', col);
+
+            thead.append(header);
         }
 
         if (config.reorderableColumns) {
