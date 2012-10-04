@@ -1,6 +1,7 @@
 package com.centurylink.hospital
 
 import org.springframework.dao.DataIntegrityViolationException
+import grails.converters.JSON
 
 class StyleTestController {
 
@@ -11,10 +12,17 @@ class StyleTestController {
     }
 
     def list(Integer max) {
+        def listReturn = [:]
         params.max = Math.min(max ?: 10, 100)
-        def test = StyleTest.list(params)
+        listReturn.list = StyleTest.list(params)
+        listReturn.count = StyleTest.count()
 
-        [list: test, styleTestInstanceTotal: StyleTest.count()]
+        def model = [list: listReturn]
+
+        withFormat {
+            html { model }
+            json { render model as JSON }
+        }
     }
 
     def create() {

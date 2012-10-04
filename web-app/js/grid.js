@@ -76,6 +76,7 @@
             return (filesize.toString().indexOf('.') > -1 ? filesize.toFixed(dp) : filesize) + ' ' + units[i];
         }
     }
+    , oppositeSort = {'asc': 'desc', 'desc': 'asc'}
 
     function getRenderer(col) {
         var r = renderers[col.renderer.toLowerCase()] || window[col.renderer]
@@ -83,7 +84,7 @@
             , key
             , parts
             , i
-            ;
+        ;
         if (!$.isFunction(r)) {
             // eval is evil so recurse through window if we can
             parts = col.renderer.split('.');
@@ -148,17 +149,8 @@
 	$.fn.grid = function(config) {
         var render
             , getSortFunction
+            , cols = {} // name/value pair for easier lookup
         ;
-
-        config = $.extend({
-            data: []
-            , dataUrl: ''
-            , columns: [
-                {label: 'No Columns Configured', name: 'no_columns', renderer: 'string', sortable: false, order: 'asc'}
-            ]
-            , reorderableColumns: false
-            , url: ''
-        }, config);
 
         getSortFunction = function(key, asc) {
             var direction = (asc) ? 1 : -1
@@ -227,7 +219,12 @@
         }
 
         render = function() {
-            var tbody = config.table.find('tbody');
+            var tbody = config.table.find('tbody')
+                , numLinks = 2
+                , pagingControls
+                , usePaging
+            ;
+
             tbody.empty();
 
             for (var i = 0; i < config.data.length; i++) {
@@ -238,8 +235,111 @@
                         config.columns[c].renderer(config.data[i][config.columns[c].name], {}) +
                         '</td>';
                 }
-                tbody.append('<tr class="' + ((i + 1) % 2 ? 'even' : 'odd') + '">' + row + '</tr>');
+                tbody.append('<tr class="' + ((i + 1) % 2 ? 'even' : 'odd') + '" data-idx="' + i + '">' + row + '</tr>');
             }
+            pageClickHandler = function() {
+                var self = $(this)
+                    , page = self.data('page')
+                ;
+                getData(page);
+            };
+
+            makePageButton = function(page, label, buttonClass) {
+                if (label === undefined) {
+                    label = page;
+                }
+                if (buttonClass === undefined) {
+                    buttonClass = ' class="page-button" ';
+                }
+                return '<a href="javascript:void(0);" data-page="' + page + '"' + buttonClass + '><span>' + label + '</span></a>';
+            };
+
+
+            pagingControls = config.table.parent().find('div.grid-paging');
+            usePaging = config.rows > 0 && config.dataLength > config.data.length;
+
+            if (usePaging) {
+                if (!pagingControls.length) {
+                    if (config.pagingLocation == 'bottom') {
+                        config.table.parent().append('<div class="grid-paging"></div>');
+                    } else {
+                        config.table.parent().prepend('<div class="grid-paging"></div>');
+                    }
+                    pagingControls = config.table.parent().find('div.grid-paging');
+                }
+                pagingControls.empty();
+                numPages = Math.ceil(config.dataLength / config.rows);
+                useNumbersOnly = numPages <= 1 + numLinks * 2;
+                startRow = (config.rows * (config.page - 1)) + 1;
+                endRow = config.rows * config.page;
+                if (endRow > config.dataLength) {
+                    endRow = config.dataLength;
+                }
+
+                // don't always need to show this text
+                if (config.pagingNumOnly === false) {
+                    pagingControls.append('Showing rows ' + startRow + '-' + endRow + ' of ' + config.dataLength + ' - ');
+                }
+
+                // add << and < buttons
+                if (config.page > 1 && !useNumbersOnly) {
+                    if (config.pagingUseWords === false) {
+                        pagingControls.append(makePageButton(1, '&lt;&lt;', ' class="page-first" '));
+                        pagingControls.append(makePageButton(config.page - 1, '&lt;', ' class="page-previous" '));
+                    } else {
+                        pagingControls.append(makePageButton(1, 'First', ' class="page-first" '));
+                        pagingControls.append(makePageButton(config.page - 1, 'Previous', ' class="page-previous" '));
+                    }
+                } else if (config.pagingShowAll === true && !useNumbersOnly) {
+                    if (config.pagingUseWords === false) {
+                        pagingControls.append('<span class="page-first-inactive">&lt;&lt;</span>');
+                        pagingControls.append('<span class="page-previous-inactive">&lt;</span>');
+                    } else {
+                        pagingControls.append('<span class="page-first-inactive">First</span>');
+                        pagingControls.append('<span class="page-previous-inactive">Previous</span>');
+                    }
+                }
+
+                // we want 5 links from 2 pages back to 2 pages forward, or up to 4 pages forward or back if we're on one side or the other
+                numLeft = Math.max(0, Math.min(config.page - 1, numLinks));
+                numRight = Math.max(0, Math.min(numPages - config.page, numLinks));
+                numLeft += Math.max(0, Math.min(numLinks - numRight, config.page - numLinks - 1));
+                numRight += Math.max(0, Math.min(numLinks - numLeft, numPages - config.page - numLinks));
+
+                for (i = numLeft; i > 0; i--) {
+                    pagingControls.append(makePageButton(config.page - i));
+                }
+
+                pagingControls.append('<span class="current-page">' + config.page + '</span>');
+
+                for (i = 1; i <= numRight; i++) {
+                    pagingControls.append(makePageButton(config.page + i));
+                }
+
+                // add > and >> buttons
+                if (config.page < numPages && !useNumbersOnly) {
+                    if (config.pagingUseWords === false) {
+                        pagingControls.append(makePageButton(config.page + 1, '&gt;', ' class="page-next" '));
+                        pagingControls.append(makePageButton(numPages, '&gt;&gt;', ' class="page-last" '));
+                    } else {
+                        pagingControls.append(makePageButton(config.page + 1, 'Next', ' class="page-next" '));
+                        pagingControls.append(makePageButton(numPages, 'Last', ' class="page-last" '));
+                    }
+                } else if (config.pagingShowAll === true && !useNumbersOnly) {
+                    if (config.pagingUseWords === false) {
+                        pagingControls.append('<span class="page-next-inactive">&gt;</span>');
+                        pagingControls.append('<span class="page-last-inactive">&gt;&gt;</span>');
+                    } else {
+                        pagingControls.append('<span class="page-next-inactive">Next</span>');
+                        pagingControls.append('<span class="page-last-inactive">Last</span>');
+                    }
+                }
+
+                pagingControls.find('a').click(pageClickHandler);
+
+            }
+
+
         }
 
         getColumnByName = function(col) {
@@ -279,12 +379,66 @@
 
         sort = function(col, dir) {
             config.sortedOn = col;
-            config.sortedAsc = !!(dir == 'asc');
+            config.sortedDir = dir;
 
-            config.data.sort(getSortFunction(config.sortedOn, config.sortedAsc));
+            if (config.dataLength <= config.data.length) {
+                config.data.sort(getSortFunction(config.sortedOn, !!(config.sortedDir == 'asc')));
+                render();
+            } else {
+                config.page = 1;
+                getData();
+            }
+        }
+
+        getData = function(page, col, dir) {
+            page = page || config.page || 1
+            col = col || config.sortedOn || ''
+            dir = dir || config.sortedDir || 'asc'
+
+            // TODO: implement caching
+
+            if (config.dataUrl != '') {
+                $.ajax({
+                    url: config.dataUrl
+                    , type: 'POST'
+                    , data: {
+                        offset: config.rows * (page - 1)
+                        , sort: (col == '' ? undefined : col)
+                        , order: dir
+                        , max: config.rows
+                    }
+                }).done(function(returnData) {
+                    config.page = page;
+                    config.sortedOn = col;
+                    config.sortedDir = dir;
+                    config.data = returnData.list.list; // odd formatting I know, but it's what I decided on.
+                    render();
+                }).fail(function() {
+                    console.log('we failed!');
+                })
+            }
+
         }
 
         /******** init section ********/
+
+        config = $.extend({
+            data: []
+            , dataLength: 0
+            , dataUrl: ''
+            , columns: [
+                {label: 'No Columns Configured', name: 'no_columns', renderer: 'string', sortable: false, order: 'asc'}
+            ]
+            , reorderableColumns: false
+            , url: ''
+            , sortedOn: ''
+            , sortedDir: 'asc'
+            , page: 1
+            , rows: -1
+            , pagingLocation: 'top' // top/bottom
+            , pagingShowAll: false
+            , pagingUseWords: false
+        }, config);
 
         this.css('padding-bottom', '1px'); // hack for missing bottom border?
 
@@ -311,13 +465,14 @@
                 col.renderer = getRenderer(col);
             }
 
-            var header = $('<th>' +
+            var header = $('<th data-name="' + col.name + '">' +
                 col.label +
                 (col.sortable ? ' <span class="order ' + col.order  + '"></span>' : '') +
             '</th>');
-            header.data('meta', col);
 
             thead.append(header);
+
+            cols[col.name] = col;
         }
 
         if (config.reorderableColumns) {
@@ -325,35 +480,31 @@
             config.table.sortable({
                 items: 'th'
             });
+
+            // TODO: handle column reordering events
         }
 
         config.table.on('click', 'th', function() {
-            var self = $(this);
+            var self = $(this)
+                , name = self.data('name')
+                , sortDir = 'asc'
+                , sortIndicator = self.find('span.order')
+            ;
 
-            if (config.dataUrl != '') {
-                $.ajax({
-                    url: config.dataUrl
-                    , type: 'POST'
-                    , data: {}
-                }).done(function() {
-                        // render data
-                    }).fail(function() {
-                        // do something productive.
-                    })
+            if ((config.sortedOn || '') == name) {
+                sortDir = oppositeSort[config.sortedDir];
             }
+
+            console.log(sortDir);
+
+            sortIndicator.removeClass('asc desc').addClass(sortDir);
+
+            sort(name, sortDir);
 
         }).on('click', 'td', function() {
             var self = $(this);
-            var rowIdx = 0;
+            var rowIdx = self.parents('tr:first').data('idx');
             var url = '';
-
-            // figure out my row idx
-            config.table.find('tr').each(function(idx) {
-                if ($(this).find(self).length) {
-                    rowIdx = idx - 1;
-                    return false;
-                }
-            });
 
             if (self.data('url') !== undefined) {
                 url = self.data('url');

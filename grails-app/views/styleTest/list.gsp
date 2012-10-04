@@ -20,7 +20,7 @@
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
-            <cl:grid name="${ entityName }Grid" data="${ list }" url="${createLink(action: 'show', params: [id: '{{id}}'])}">
+            <cl:grid name="${ entityName }Grid" data="${ list }" url="${createLink(action: 'show', params: [id: '{{id}}'])}" rows="2">
                 <cl:column name="name" label="My Name Column" />
                 <cl:column name="column1" />
                 <cl:column name="column2" />

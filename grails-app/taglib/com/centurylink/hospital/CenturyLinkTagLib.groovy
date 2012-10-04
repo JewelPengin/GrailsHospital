@@ -18,6 +18,9 @@ class CenturyLinkTagLib {
         if (!attrs.containsKey('id')) {
             attrs.id = attrs.name.replaceAll(/\s+/, '-')
         }
+        if (!attrs.containsKey('rows')) {
+            attrs.rows = -1
+        }
 
         def localData = [attrs: attrs]
 
@@ -27,16 +30,22 @@ class CenturyLinkTagLib {
         body()
 
         def columnData = helpers.getChildTags().collect { if (it.tag == 'column') { it.data.attrs } }
+        def dataList = localData.attrs.data.list
+        if (localData.attrs.rows >= 0) {
+            dataList = dataList.subList(0, localData.attrs.rows.toInteger())
+        }
 
         out << r.script() {
             out << """\
                 \$(function(){
                     \$('#${ localData.attrs.id }').grid({
-                        data: ${ localData.attrs.data.encodeAsJSON() }
+                        data: ${ dataList.encodeAsJSON() }
                         , columns: ${ columnData.encodeAsJSON() }
                         , url: '${ (localData.attrs.url ?: '').encodeAsJavaScript() }'
-                        , dataUrl: '${ (localData.attrs.dataUrl ?: '').encodeAsJavaScript() }'
+                        , dataUrl: '${ (localData.attrs.dataUrl ?: createLink(action: 'list') + '.json').encodeAsJavaScript() }'
                         , reorderableColumns: ${ localData.attrs.reorderable ? 'true' : 'false'}
+                        , rows: ${ localData.attrs.rows }
+                        , dataLength: ${ localData.attrs.data.count }
                     });
                 });
             """
