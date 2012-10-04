@@ -1,4 +1,5 @@
 *.iws
+*.iml
 *Db.properties
 *Db.script
 .settings
@@ -9,7 +10,5 @@ out
 /plugins
 /web-app/plugins
 /web-app/WEB-INF/classes
-
 .idea/workspace.xml
-
 .DS_Store

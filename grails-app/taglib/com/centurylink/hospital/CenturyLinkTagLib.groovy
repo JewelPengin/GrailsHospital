@@ -59,6 +59,12 @@ class CenturyLinkTagLib {
         if (!attrs.containsKey('renderer')) {
             attrs.renderer = 'string'
         }
+        if (!attrs.containsKey('sortable')) {
+            attrs.sortable = true
+        }
+        if (!attrs.containsKey('order')) {
+            attrs.order = 'asc'
+        }
 
         def localData = [attrs: attrs]
 
