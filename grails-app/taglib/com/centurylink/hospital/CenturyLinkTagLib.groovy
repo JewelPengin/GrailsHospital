@@ -31,7 +31,7 @@ class CenturyLinkTagLib {
 
         def columnData = helpers.getChildTags().collect { if (it.tag == 'column') { it.data.attrs } }
         def dataList = localData.attrs.data.list
-        if (localData.attrs.rows >= 0) {
+        if (localData.attrs.rows >= 0 && dataList.size() >= localData.attrs.rows.toInteger()) {
             dataList = dataList.subList(0, localData.attrs.rows.toInteger())
         }
 
