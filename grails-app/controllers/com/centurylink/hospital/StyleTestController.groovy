@@ -28,7 +28,7 @@ class StyleTestController {
 
 	def list(Integer max) {
 		def listReturn = [:]
-		params.max = Math.min(max ?: 10, 100)
+		params.max = Math.min(max ?: 20, 100)
 		listReturn.list = StyleTest.list(params)
 		listReturn.count = StyleTest.count()
 
