@@ -3,7 +3,7 @@
 body {
 	font-family: arial;
 	font-size: 12px;
-	background: #eeeeee url(images/ui-bg_diagonals-thick_90_eeeeee_40x40.png) 50% 50% repeat;
+	background: #eeeeee url('@{layoutPath}ui-bg_diagonals-thick_90_eeeeee_40x40.png') 50% 50% repeat;
 
 	> footer {
 		text-align: center;
@@ -145,6 +145,7 @@ header#toolbar {
 
 table {
 	width: 100%;
+	cursor: pointer;
 
 	&.reorderable {
 		th {
@@ -167,7 +168,7 @@ table {
 			.inline-block-middle;
 			width: 8px;
 			height: 4px;
-			background-image: url(/images/icons/orderArrows.png);
+			background-image: url('@{iconPath}orderArrows.png');
 			background-repeat: no-repeat;
 			cursor: pointer;
 
@@ -235,6 +236,8 @@ table {
 }
 
 .grid-paging {
+	padding: 5px 0;
+
 	span {
 		.inline-block;
 		padding: 0px 5px;
@@ -262,4 +265,259 @@ h6 {
 	font-size: 10px;
 	color: @lightGrey;
 	font-weight: normal;
+}
+
+/* form fields */
+
+form input,
+form textarea,
+form .wysiwyg,
+form select {
+	padding: 3px;
+	font-size: 12px;
+	background: #fff url('@{layoutPath}bg-form-field.gif') top left repeat-x;
+	border: 1px solid #d5d5d5;
+	color: #333;
+	.rounded(4px);
+
+	&.success {
+		background: #b2e371 url('@{layoutPath}bg-form-field-success.gif') top left repeat-x;
+	}
+	&.error {
+		background: #f4c2c2 url('@{layoutPath}bg-form-field-error.gif') top left repeat-x;
+	}
+	&.loading {
+		background-color: #fff;
+		background-image: url('@{iconPath}loading.gif');
+		background-position: right center;
+		background-repeat: no-repeat;
+		background-origin: content-box;
+		color: #333;
+		font-size: 12px;
+		font-weight: normal;
+		height: auto;
+		line-height: 1em;
+		padding-left: 6px;
+	}
+}
+
+.field-container {
+	> .label {
+		.inline-block-middle;
+		text-align: right;
+		width: 100px;
+	}
+	> input, select {
+		.inline-block;
+		width: 150px;
+	}
+}
+
+/* buttons */
+
+.buttons {
+	text-align: right;
+	padding: 5px 0;
+}
+.button
+, .button:visited
+, .button:active
+, .button.active
+, input.swap
+, input.swap_sort {
+	border-radius: 4px 4px 4px 4px;
+	.gradientTopToBottom(#fff, #ddd);
+	display: inline-block;
+	padding: 4px 6px 4px 6px;
+	border: 1px solid #ccc;
+	margin: 0px;
+	font-size:11px;
+	color: #35333c;
+	text-decoration: none;
+	font-weight: bold;
+	cursor: pointer;
+}
+.button:hover
+, .button.hover
+, input.swap:hover
+, input.swap_sort {
+	border:1px solid #aaa;
+	.gradientTopToBottom(#fff, #cdcdcd);
+	background-position: left top;
+}
+.button:active
+, .button.active {
+	.gradientTopToBottom(#ccc, #eee);
+}
+.button.disabled
+, .button.disabled:hover {
+	border: 1px solid #ccc;
+	background-color: #fff;
+	color: #ccc;
+	cursor: hand;
+}
+
+/*---icons---*/
+.icons-mixin {
+	.inline-block;
+	height: 16px;
+	padding-left: 20px;
+	background-repeat: no-repeat;
+}
+span.icon {
+	.icons-mixin;
+}
+input[type="submit"].icon {
+	.icons-mixin;
+	height: auto;
+	background-position: 0 center;
+}
+span.arrow-up-icon {
+	background-image: url('@{iconPath}plus.gif');
+	.icons-mixin;
+}
+span.arrow-down-icon {
+	background-image: url('@{iconPath}minus.gif');
+	.icons-mixin;
+}
+span.indent-icon {
+	background-image: url('@{iconPath}indent.gif');
+	.icons-mixin;
+}
+span.change-icon, a.file-change {
+	background-image: url('@{silkPath}arrow_rotate_clockwise.png');
+	.icons-mixin;
+}
+a.file-delete {
+	margin-left:-10px;
+	background-image: url('@{silkPath}delete.png');
+	.icons-mixin;
+}
+
+/* generic icons */
+.icon-add {
+	background-image: url('@{silkPath}add.png');
+}
+.icon-edit {
+	background-image: url('@{silkPath}pencil.png');
+}
+.icon-delete {
+	background-image: url('@{silkPath}delete.png');
+}
+.icon-export {
+	background-image: url('@{silkPath}disk.png');
+}
+.icon-info {
+	background-image: url('@{silkPath}information.png');
+}
+.icon-xml {
+	background-image: url('@{silkPath}script_code.png');
+}
+.icon-change {
+	background-image: url('@{silkPath}arrow_rotate_clockwise.png');
+}
+.icon-video, .icon-videos {
+	background-image: url('@{silkPath}control_play.png');
+}
+.icon-category, .icon-categories {
+	background-image: url('@{silkPath}folder.png');
+}
+.icon-schedule, .icon-schedules {
+	background-image: url('@{silkPath}calendar.png');
+}
+.icon-video-player {
+	background-image: url('@{silkPath}application.png');
+}
+.icon-video-players {
+	background-image: url('@{silkPath}application_cascade.png');
+}
+.icon-log {
+	background-image: url('@{silkPath}page_white_database.png');
+}
+.icon-checked {
+	background-image: url('@{silkPath}radio_checked.png');
+}
+.icon-unchecked {
+	background-image: url('@{silkPath}radio_default.png');
+}
+.icon-user-edit {
+	background-image: url('@{silkPath}user_edit.png');
+}
+.icon-invalid {
+	background-image: url('@{silkPath}exclamation.png');
+}
+.icon-valid {
+	background-image: url('@{silkPath}accept.png');
+}
+.icon-print {
+	background-image: url('@{silkPath}printer.png');
+}
+.icon-page-copy {
+	background-image: url('@{silkPath}page_copy.png');
+}
+
+/* messenger */
+
+.messages {
+	ul {
+		border-style:solid;
+		border-width:1px;
+		margin:10px 0;
+		padding:5px;
+		font-weight:bold;
+	}
+
+	li {
+		line-height:16px;
+		padding-left:20px;
+		list-style:none;
+		list-style-position:inside;
+		font-weight:normal;
+	}
+
+	div {
+		margin-bottom:10px;
+	}
+
+	a {
+		color:inherit;
+		font-weight:bold;
+	}
+
+	label {
+		cursor:hand;
+		cursor:pointer;
+	}
+
+	.errors {
+		background-color:#FFC0C0;
+		border-color:#C00000;
+		li {
+			background:url('@{silkPath}cross.png') no-repeat;
+		}
+	}
+
+	.warnings {
+		background-color:#FFF6BF;
+		border-color:#FFD324;
+		li {
+			background:url('@{silkPath}error.png') no-repeat;
+		}
+	}
+
+	.successes {
+		background-color:#DEFFAF;
+		border-color:#ACD919;
+		li {
+			background:url('@{silkPath}tick.png') no-repeat;
+		}
+	}
+
+	.notifications {
+		background-color:#E9F1FF;
+		border-color:#B5D4FE;
+		li {
+			background:url('@{silkPath}information.png') no-repeat;
+		}
+	}
 }

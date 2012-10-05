@@ -18,14 +18,14 @@
 	<g:textField name="lastName" value="${doctorInstance?.lastName}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: doctorInstance, field: 'primary_care_patient', 'error')} ">
-	<label for="primary_care_patient">
-		<g:message code="doctor.primary_care_patient.label" default="Primarycarepatient" />
+<div class="fieldcontain ${hasErrors(bean: doctorInstance, field: 'primaryCarePatient', 'error')} ">
+	<label for="primaryCarePatient">
+		<g:message code="doctor.primaryCarePatient.label" default="Primary Care Patient" />
 		
 	</label>
 	
 <ul class="one-to-many">
-<g:each in="${doctorInstance?.primary_care_patient?}" var="p">
+<g:each in="${doctorInstance?.primaryCarePatient?}" var="p">
     <li><g:link controller="patient" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
 </g:each>
 <li class="add">
@@ -35,15 +35,15 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: doctorInstance, field: 'provided_prescription', 'error')} ">
-	<label for="provided_prescription">
-		<g:message code="doctor.provided_prescription.label" default="Providedprescription" />
+<div class="fieldcontain ${hasErrors(bean: doctorInstance, field: 'writtenPrescription', 'error')} ">
+	<label for="writtenPrescription">
+		<g:message code="doctor.writtenPrescription.label" default="Written Prescription" />
 		
 	</label>
 	
 <ul class="one-to-many">
-<g:each in="${doctorInstance?.provided_prescription?}" var="p">
-    <li><g:link controller="prescription" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
+<g:each in="${doctorInstance?.writtenPrescription?}" var="w">
+    <li><g:link controller="prescription" action="show" id="${w.id}">${w?.encodeAsHTML()}</g:link></li>
 </g:each>
 <li class="add">
 <g:link controller="prescription" action="create" params="['doctor.id': doctorInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'prescription.label', default: 'Prescription')])}</g:link>

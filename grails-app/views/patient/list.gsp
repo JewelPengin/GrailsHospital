@@ -24,13 +24,13 @@
 				<thead>
 					<tr>
 					
+						<th><g:message code="patient.occupiedRoom.label" default="Occupied Room" /></th>
+					
 						<g:sortableColumn property="firstName" title="${message(code: 'patient.firstName.label', default: 'First Name')}" />
 					
 						<g:sortableColumn property="lastName" title="${message(code: 'patient.lastName.label', default: 'Last Name')}" />
 					
-						<th><g:message code="patient.occupied_room.label" default="Occupiedroom" /></th>
-					
-						<th><g:message code="patient.primary_care_doctor.label" default="Primarycaredoctor" /></th>
+						<th><g:message code="patient.primaryCareDoctor.label" default="Primary Care Doctor" /></th>
 					
 					</tr>
 				</thead>
@@ -38,13 +38,13 @@
 				<g:each in="${patientInstanceList}" status="i" var="patientInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
-						<td><g:link action="show" id="${patientInstance.id}">${fieldValue(bean: patientInstance, field: "firstName")}</g:link></td>
+						<td><g:link action="show" id="${patientInstance.id}">${fieldValue(bean: patientInstance, field: "occupiedRoom")}</g:link></td>
+					
+						<td>${fieldValue(bean: patientInstance, field: "firstName")}</td>
 					
 						<td>${fieldValue(bean: patientInstance, field: "lastName")}</td>
 					
-						<td>${fieldValue(bean: patientInstance, field: "occupied_room")}</td>
-					
-						<td>${fieldValue(bean: patientInstance, field: "primary_care_doctor")}</td>
+						<td>${fieldValue(bean: patientInstance, field: "primaryCareDoctor")}</td>
 					
 					</tr>
 				</g:each>

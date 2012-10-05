@@ -2,15 +2,13 @@ package com.centurylink.hospital
 
 class Nurse {
 
-    long id
-    long room_id
-    String firstName
-    String lastName
-    static hasOne = [staffing_room: Room, supervisor: Nurse]
-    static hasMany = [supervised: Nurse]
+	String firstName
+	String lastName
+	static hasOne = [staffedRoom: Room, supervisor: Nurse]
+	static hasMany = [supervisedNurse: Nurse]
 
-    static constraints = {
+	static constraints = {
+		supervisor nullable: true // A nurse doesn't have to have a supervisor
+	}
 
-        room_id nullable: false
-    }
 }

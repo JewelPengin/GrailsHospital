@@ -2,6 +2,14 @@
 
 
 
+<div class="fieldcontain ${hasErrors(bean: patientInstance, field: 'occupiedRoom', 'error')} ">
+	<label for="occupiedRoom">
+		<g:message code="patient.occupiedRoom.label" default="Occupied Room" />
+		
+	</label>
+	<g:select id="occupiedRoom" name="occupiedRoom.id" from="${com.centurylink.hospital.Room.list()}" optionKey="id" value="${patientInstance?.occupiedRoom?.id}" class="many-to-one" noSelection="['null': '']"/>
+</div>
+
 <div class="fieldcontain ${hasErrors(bean: patientInstance, field: 'firstName', 'error')} ">
 	<label for="firstName">
 		<g:message code="patient.firstName.label" default="First Name" />
@@ -18,30 +26,22 @@
 	<g:textField name="lastName" value="${patientInstance?.lastName}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: patientInstance, field: 'occupied_room', 'error')} required">
-	<label for="occupied_room">
-		<g:message code="patient.occupied_room.label" default="Occupiedroom" />
+<div class="fieldcontain ${hasErrors(bean: patientInstance, field: 'primaryCareDoctor', 'error')} required">
+	<label for="primaryCareDoctor">
+		<g:message code="patient.primaryCareDoctor.label" default="Primary Care Doctor" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="occupied_room" name="occupied_room.id" from="${com.centurylink.hospital.Room.list()}" optionKey="id" required="" value="${patientInstance?.occupied_room?.id}" class="many-to-one"/>
+	<g:select id="primaryCareDoctor" name="primaryCareDoctor.id" from="${com.centurylink.hospital.Doctor.list()}" optionKey="id" required="" value="${patientInstance?.primaryCareDoctor?.id}" class="many-to-one"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: patientInstance, field: 'primary_care_doctor', 'error')} required">
-	<label for="primary_care_doctor">
-		<g:message code="patient.primary_care_doctor.label" default="Primarycaredoctor" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:select id="primary_care_doctor" name="primary_care_doctor.id" from="${com.centurylink.hospital.Doctor.list()}" optionKey="id" required="" value="${patientInstance?.primary_care_doctor?.id}" class="many-to-one"/>
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: patientInstance, field: 'received_prescription', 'error')} ">
-	<label for="received_prescription">
-		<g:message code="patient.received_prescription.label" default="Receivedprescription" />
+<div class="fieldcontain ${hasErrors(bean: patientInstance, field: 'recievedPrescription', 'error')} ">
+	<label for="recievedPrescription">
+		<g:message code="patient.recievedPrescription.label" default="Recieved Prescription" />
 		
 	</label>
 	
 <ul class="one-to-many">
-<g:each in="${patientInstance?.received_prescription?}" var="r">
+<g:each in="${patientInstance?.recievedPrescription?}" var="r">
     <li><g:link controller="prescription" action="show" id="${r.id}">${r?.encodeAsHTML()}</g:link></li>
 </g:each>
 <li class="add">

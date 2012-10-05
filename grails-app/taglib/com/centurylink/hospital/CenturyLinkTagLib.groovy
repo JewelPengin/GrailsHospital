@@ -20,6 +20,8 @@ class CenturyLinkTagLib {
         }
         if (!attrs.containsKey('rows')) {
             attrs.rows = -1
+        } else {
+            attrs.rows = attrs.rows.toInteger()
         }
 
         def localData = [attrs: attrs]
@@ -31,8 +33,9 @@ class CenturyLinkTagLib {
 
         def columnData = helpers.getChildTags().collect { if (it.tag == 'column') { it.data.attrs } }
         def dataList = localData.attrs.data.list
-        if (localData.attrs.rows >= 0) {
-            dataList = dataList.subList(0, localData.attrs.rows.toInteger())
+
+        if (localData.attrs.rows >= 0 && dataList.size() >= localData.attrs.rows) {
+            dataList = dataList.subList(0, localData.attrs.rows)
         }
 
         out << r.script() {
@@ -64,6 +67,7 @@ class CenturyLinkTagLib {
         }
         if (!attrs.containsKey('label')) {
             attrs.label = attrs.name
+            // TODO: humanize function
         }
         if (!attrs.containsKey('renderer')) {
             attrs.renderer = 'string'

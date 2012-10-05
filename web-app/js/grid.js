@@ -439,6 +439,7 @@
             , pagingLocation: 'top' // top/bottom
             , pagingShowAll: false
             , pagingUseWords: false
+            , pagingNumOnly: false
         }, config);
 
         this.css('padding-bottom', '1px'); // hack for missing bottom border?

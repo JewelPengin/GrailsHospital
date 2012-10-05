@@ -11,7 +11,7 @@
     <nav id="main-nav">
         <g:render template="/shared/nav" model="[nav: mainNav]" />
         <ul>
-            <li><a href="/">logout</a></li>
+            <li><a href="/logout">logout</a></li>
         </ul>
     </nav>
 </header>
