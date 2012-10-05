@@ -2,12 +2,10 @@ package com.centurylink.hospital
 
 class Drug {
 
-    long id
-    String drugName
+	String drugName
 
-    static hasMany = [contained_prescription: Prescription]
-    static constraints = {
+	static hasMany = [containingPrescription: Prescription]
 
+	static constraints = {}
 
-    }
 }

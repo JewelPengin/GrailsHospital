@@ -2,13 +2,10 @@ package com.centurylink.hospital
 
 class Doctor {
 
-    long id
-    String firstName
-    String lastName
+	String firstName
+	String lastName
+	static hasMany = [writtenPrescription: Prescription, primaryCarePatient: Patient]
 
-    static hasMany = [provided_prescription: Prescription, primary_care_patient: Patient]
+	static constraints = {}
 
-    static constraints = {
-
-    }
 }
