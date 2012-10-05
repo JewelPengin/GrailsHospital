@@ -6,6 +6,7 @@ class Person {
 
 	String username
 	String password
+    String realname
 	boolean enabled
 	boolean accountExpired
 	boolean accountLocked

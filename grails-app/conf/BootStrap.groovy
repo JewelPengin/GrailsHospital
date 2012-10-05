@@ -7,26 +7,39 @@ class BootStrap {
     def springSecurityService
 
     def init = { servletContext ->
-            createData()
+        createData()
     }
     def destroy = {
     }
 
     public void createData(){
         def userRole = Authority.findByAuthority('ROLE_USER') ?: new Authority(authority: 'ROLE_USER').save(flush:true)
+        def adminRole = Authority.findByAuthority('ROLE_ADMIN')?: new Authority(authority: 'ROLE_ADMIN').save(flush: true)
+        [dave: [name: 'Dave Gunawan', role: userRole], jon: [name: 'Jonathan Larson', role: adminRole], brad: [name: 'Bradley Rhoades', role: userRole],farouk:[name:'Farouk Althlathini',role: adminRole]].each{username,userData ->
+            def userParams = [
+                username: username
+                , enabled: true
+                , realname: userData.name
+                , password: '1234'
+            ]
+            def user = Person.findByUsername(username)?: new Person(userParams)
 
-        def user = Person.findByUsername('farouk') ?: new Person(username:  'farouk', enabled: true, password: '1234').save(flush:true)
-        def user2 = Person.findByUsername('dave') ?: new Person(username: 'dave',enabled: true, password: 'dave').save(flush: true)
-
-        if (!user.authorities.contains(userRole)){
-        PersonAuthority.create user, userRole, true
+            if (!user.authorities.contains(userData.role)){
+                PersonAuthority.create user, userData.role, true
+            }
+            user.save(flush:true)
         }
 
-        if (!user2.authorities.contains(userRole)){
-            PersonAuthority.create user2, userRole, true
-        }
-        assert Person.count() == 2
-        assert Authority.count() == 1
-        assert PersonAuthority.count() == 2
+        assert Person.count() == 4
+        assert Authority.count() == 2
+        assert PersonAuthority.count() == 4
     }
+
+/*            if (!user.validate()) {
+    user.errors.allErrors.each {
+        println it
+    }
+} else {
+}*/
+
 }
