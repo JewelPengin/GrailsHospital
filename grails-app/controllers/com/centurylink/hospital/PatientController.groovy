@@ -10,8 +10,8 @@ class PatientController {
         redirect(action: "list", params: params)
     }
 
-    def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+    def list(Integer max) {
+        params.max = Math.min(max ?: 10, 100)
         [patientInstanceList: Patient.list(params), patientInstanceTotal: Patient.count()]
     }
 
@@ -30,10 +30,10 @@ class PatientController {
         redirect(action: "show", id: patientInstance.id)
     }
 
-    def show() {
-        def patientInstance = Patient.get(params.id)
+    def show(Long id) {
+        def patientInstance = Patient.get(id)
         if (!patientInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'patient.label', default: 'Patient'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'patient.label', default: 'Patient'), id])
             redirect(action: "list")
             return
         }
@@ -41,10 +41,10 @@ class PatientController {
         [patientInstance: patientInstance]
     }
 
-    def edit() {
-        def patientInstance = Patient.get(params.id)
+    def edit(Long id) {
+        def patientInstance = Patient.get(id)
         if (!patientInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'patient.label', default: 'Patient'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'patient.label', default: 'Patient'), id])
             redirect(action: "list")
             return
         }
@@ -52,16 +52,15 @@ class PatientController {
         [patientInstance: patientInstance]
     }
 
-    def update() {
-        def patientInstance = Patient.get(params.id)
+    def update(Long id, Long version) {
+        def patientInstance = Patient.get(id)
         if (!patientInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'patient.label', default: 'Patient'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'patient.label', default: 'Patient'), id])
             redirect(action: "list")
             return
         }
 
-        if (params.version) {
-            def version = params.version.toLong()
+        if (version != null) {
             if (patientInstance.version > version) {
                 patientInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
                         [message(code: 'patient.label', default: 'Patient')] as Object[],
@@ -82,22 +81,22 @@ class PatientController {
         redirect(action: "show", id: patientInstance.id)
     }
 
-    def delete() {
-        def patientInstance = Patient.get(params.id)
+    def delete(Long id) {
+        def patientInstance = Patient.get(id)
         if (!patientInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'patient.label', default: 'Patient'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'patient.label', default: 'Patient'), id])
             redirect(action: "list")
             return
         }
 
         try {
             patientInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'patient.label', default: 'Patient'), params.id])
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'patient.label', default: 'Patient'), id])
             redirect(action: "list")
         }
         catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'patient.label', default: 'Patient'), params.id])
-            redirect(action: "show", id: params.id)
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'patient.label', default: 'Patient'), id])
+            redirect(action: "show", id: id)
         }
     }
 }
