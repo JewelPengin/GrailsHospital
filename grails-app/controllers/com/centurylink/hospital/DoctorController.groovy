@@ -4,7 +4,7 @@ import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.JSON
 
-@Secured (['ROLE_USER'])
+@Secured (['ROLE_USER', 'ROLE_ADMIN'])
 
 class DoctorController {
 

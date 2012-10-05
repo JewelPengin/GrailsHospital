@@ -7,26 +7,44 @@ class BootStrap {
 	def springSecurityService
 
 	def init = { servletContext ->
-			createData()
+		createData()
 	}
 	def destroy = {
 	}
 
-	public void createData(){
+	public void createData() {
 		def userRole = Authority.findByAuthority('ROLE_USER') ?: new Authority(authority: 'ROLE_USER').save(flush:true)
+		def adminRole = Authority.findByAuthority('ROLE_ADMIN') ?: new Authority(authority: 'ROLE_ADMIN').save(flush:true)
 
-		def user = Person.findByUsername('farouk') ?: new Person(username:  'farouk', enabled: true, password: '1234').save(flush:true)
-		def user2 = Person.findByUsername('dave') ?: new Person(username: 'dave',enabled: true, password: 'dave').save(flush: true)
+		def farouk = Person.findByUsername('farouk') ?: new Person(username:  'farouk', enabled: true, password: '1234').save(flush:true)
+		def dave = Person.findByUsername('dave') ?: new Person(username: 'dave', enabled: true, password: 'dave').save(flush: true)
+		def jonathan = Person.findByUsername('jonathan') ?: new Person(username: 'jonathan', enabled: true, password: 'jwl').save(flush: true)
+		def user = Person.findByUsername('user') ?: new Person(username: 'user', enabled: true, password: 'user').save(flush: true)
+		def admin = Person.findByUsername('admin') ?: new Person(username: 'admin', enabled: true, password: 'admin').save(flush: true)
 
-		if (!user.authorities.contains(userRole)){
-		PersonAuthority.create user, userRole, true
+		if (!farouk.authorities.contains(adminRole)) {
+			PersonAuthority.create farouk, adminRole, true
 		}
 
-		if (!user2.authorities.contains(userRole)){
-			PersonAuthority.create user2, userRole, true
+		if (!jonathan.authorities.contains(adminRole)) {
+			PersonAuthority.create jonathan, adminRole, true
 		}
-		assert Person.count() == 2
-		assert Authority.count() == 1
-		assert PersonAuthority.count() == 2
+
+		if (!dave.authorities.contains(adminRole)) {
+			PersonAuthority.create dave, adminRole, true
+		}
+
+		if (!user.authorities.contains(adminRole)) {
+			PersonAuthority.create user, userRole, true
+		}
+
+		if (!admin.authorities.contains(adminRole)) {
+			PersonAuthority.create admin, adminRole, true
+		}
+
+
+		assert Person.count() == 5
+		assert Authority.count() == 2
+		assert PersonAuthority.count() == 5
 	}
 }
