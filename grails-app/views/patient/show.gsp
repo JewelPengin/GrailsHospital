@@ -23,6 +23,15 @@
 			</g:if>
 			<ol class="property-list patient">
 			
+				<g:if test="${patientInstance?.occupiedRoom}">
+				<li class="fieldcontain">
+					<span id="occupiedRoom-label" class="property-label"><g:message code="patient.occupiedRoom.label" default="Occupied Room" /></span>
+					
+						<span class="property-value" aria-labelledby="occupiedRoom-label"><g:link controller="room" action="show" id="${patientInstance?.occupiedRoom?.id}">${patientInstance?.occupiedRoom?.encodeAsHTML()}</g:link></span>
+					
+				</li>
+				</g:if>
+			
 				<g:if test="${patientInstance?.firstName}">
 				<li class="fieldcontain">
 					<span id="firstName-label" class="property-label"><g:message code="patient.firstName.label" default="First Name" /></span>
@@ -41,30 +50,21 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${patientInstance?.occupied_room}">
+				<g:if test="${patientInstance?.primaryCareDoctor}">
 				<li class="fieldcontain">
-					<span id="occupied_room-label" class="property-label"><g:message code="patient.occupied_room.label" default="Occupiedroom" /></span>
+					<span id="primaryCareDoctor-label" class="property-label"><g:message code="patient.primaryCareDoctor.label" default="Primary Care Doctor" /></span>
 					
-						<span class="property-value" aria-labelledby="occupied_room-label"><g:link controller="room" action="show" id="${patientInstance?.occupied_room?.id}">${patientInstance?.occupied_room?.encodeAsHTML()}</g:link></span>
+						<span class="property-value" aria-labelledby="primaryCareDoctor-label"><g:link controller="doctor" action="show" id="${patientInstance?.primaryCareDoctor?.id}">${patientInstance?.primaryCareDoctor?.encodeAsHTML()}</g:link></span>
 					
 				</li>
 				</g:if>
 			
-				<g:if test="${patientInstance?.primary_care_doctor}">
+				<g:if test="${patientInstance?.recievedPrescription}">
 				<li class="fieldcontain">
-					<span id="primary_care_doctor-label" class="property-label"><g:message code="patient.primary_care_doctor.label" default="Primarycaredoctor" /></span>
+					<span id="recievedPrescription-label" class="property-label"><g:message code="patient.recievedPrescription.label" default="Recieved Prescription" /></span>
 					
-						<span class="property-value" aria-labelledby="primary_care_doctor-label"><g:link controller="doctor" action="show" id="${patientInstance?.primary_care_doctor?.id}">${patientInstance?.primary_care_doctor?.encodeAsHTML()}</g:link></span>
-					
-				</li>
-				</g:if>
-			
-				<g:if test="${patientInstance?.received_prescription}">
-				<li class="fieldcontain">
-					<span id="received_prescription-label" class="property-label"><g:message code="patient.received_prescription.label" default="Receivedprescription" /></span>
-					
-						<g:each in="${patientInstance.received_prescription}" var="r">
-						<span class="property-value" aria-labelledby="received_prescription-label"><g:link controller="prescription" action="show" id="${r.id}">${r?.encodeAsHTML()}</g:link></span>
+						<g:each in="${patientInstance.recievedPrescription}" var="r">
+						<span class="property-value" aria-labelledby="recievedPrescription-label"><g:link controller="prescription" action="show" id="${r.id}">${r?.encodeAsHTML()}</g:link></span>
 						</g:each>
 					
 				</li>

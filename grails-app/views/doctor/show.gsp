@@ -41,23 +41,23 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${doctorInstance?.primary_care_patient}">
+				<g:if test="${doctorInstance?.primaryCarePatient}">
 				<li class="fieldcontain">
-					<span id="primary_care_patient-label" class="property-label"><g:message code="doctor.primary_care_patient.label" default="Primarycarepatient" /></span>
+					<span id="primaryCarePatient-label" class="property-label"><g:message code="doctor.primaryCarePatient.label" default="Primary Care Patient" /></span>
 					
-						<g:each in="${doctorInstance.primary_care_patient}" var="p">
-						<span class="property-value" aria-labelledby="primary_care_patient-label"><g:link controller="patient" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></span>
+						<g:each in="${doctorInstance.primaryCarePatient}" var="p">
+						<span class="property-value" aria-labelledby="primaryCarePatient-label"><g:link controller="patient" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></span>
 						</g:each>
 					
 				</li>
 				</g:if>
 			
-				<g:if test="${doctorInstance?.provided_prescription}">
+				<g:if test="${doctorInstance?.writtenPrescription}">
 				<li class="fieldcontain">
-					<span id="provided_prescription-label" class="property-label"><g:message code="doctor.provided_prescription.label" default="Providedprescription" /></span>
+					<span id="writtenPrescription-label" class="property-label"><g:message code="doctor.writtenPrescription.label" default="Written Prescription" /></span>
 					
-						<g:each in="${doctorInstance.provided_prescription}" var="p">
-						<span class="property-value" aria-labelledby="provided_prescription-label"><g:link controller="prescription" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></span>
+						<g:each in="${doctorInstance.writtenPrescription}" var="w">
+						<span class="property-value" aria-labelledby="writtenPrescription-label"><g:link controller="prescription" action="show" id="${w.id}">${w?.encodeAsHTML()}</g:link></span>
 						</g:each>
 					
 				</li>
