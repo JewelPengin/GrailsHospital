@@ -67,6 +67,7 @@ class CenturyLinkTagLib {
         }
         if (!attrs.containsKey('label')) {
             attrs.label = attrs.name
+            // TODO: humanize function
         }
         if (!attrs.containsKey('renderer')) {
             attrs.renderer = 'string'
