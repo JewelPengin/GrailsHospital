@@ -18,21 +18,15 @@ class BootStrap {
         def userRole = Authority.findByAuthority('ROLE_USER') ?: new Authority(authority: 'ROLE_USER').save(flush:true)
         def adminRole = Authority.findByAuthority('ROLE_ADMIN')?: new Authority(authority: 'ROLE_ADMIN').save(flush: true)
 
-        [dave: [name: 'Dave Gunawan', role: userRole]
-                , jonathan: [name: 'Jonathan Larson', role: adminRole]
-                , brad: [name: 'Bradley Rhoades', role: userRole]
-                , farouk: [name:'Farouk Althlathini', role: adminRole]
-        ].each{ username, userData ->
-            def userParams = [
-                    username: username
-                    , enabled: true
-                    , realname: userData.name
-                    , password: '1234'
-            ]
-            def user = Person.findByUsername(username)?: new Person(userParams).save(flush: true)
+        [[username: 'dave', realname: 'Dave Gunawan', password: '1234', role: userRole]
+            , [username: 'jonathan', realname: 'Jonathan Larson', password: '1234', role: adminRole]
+            , [username: 'brad', realname: 'Bradley Rhoades', password: '1234', role: userRole]
+            , [username: 'farouk', realname:'Farouk Althlathini', password: '1234', role: adminRole]
+        ].eachWithIndex{ data, idx ->
+            def user = Person.findByUsername(data.username)?: new Person(data).save(flush: true)
 
-            if (!user.authorities.contains(userData.role)){
-                PersonAuthority.create user, userData.role, true
+            if (!user.authorities.contains(data.role)){
+                PersonAuthority.create user, data.role, true
             }
         }
 
@@ -42,12 +36,23 @@ class BootStrap {
 
         //create some hospital data
 
-        [Damon: 'Matt', Pitt: 'Brad', Hopkins: 'Anthony', Gere: 'Richard', Clooney: 'George']
-                .each {lastname, firstname ->
-            def cardiologist = Doctor.findByLastName(lastname)?:
-                new Doctor(firstName: firstname, lastName: lastname).save(flush:true)}
-        ['advil', 'ibuprofen', 'nyquil', 'neosporin', 'centrum', 'fishoil'].each {drug ->
-            def druglist = Drug.findByDrugName(drug)?: new Drug(drugName: drug).save(flush:true)}
+        [[lastName: 'Damon', firstName: 'Matt']
+            , [lastName: 'Pitt', firstName: 'Brad']
+            , [lastName: 'Hopkins', firstName: 'Anthony']
+            , [lastName: 'Gere', firstName: 'Richard']
+            , [lastName: 'Clooney', firstName: 'George']
+        ].each {data ->
+            def cardiologist = Doctor.findByLastName(data.lastName) ?:
+                new Doctor(data).save(flush:true)
+        }
+
+        assert Doctor.count() == 5
+
+        ['advil', 'ibuprofen', 'nyquil', 'neosporin', 'centrum', 'fishoil'].each {drugName ->
+            def drugItem = Drug.findByDrugName(drugName) ?: new Drug(drugName: drugName).save(flush:true)
+        }
+
+        assert Drug.count() == 6
 
         /*** Rooms ***/
         [[roomNumber: 1]
@@ -60,7 +65,7 @@ class BootStrap {
                 , [roomNumber: 8]
                 , [roomNumber: 9]
                 , [roomNumber: 10]
-        ].eachWithIndex { data, idx ->
+        ].each { data ->
 
             def room = new Room(data)
             if (!room.validate()) {
