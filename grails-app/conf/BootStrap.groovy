@@ -12,6 +12,11 @@ class BootStrap {
 	def init = { servletContext ->
 		createData()
 	}
+
+    def destroy = {
+
+    }
+
     public void createData(){
 
         //login data
@@ -81,10 +86,7 @@ class BootStrap {
         assert Room.count() == 10
     }
 
-	def destroy = {
-	}
-
-	}
+}
 
 
 	/*Use code snippet to print errors on a specific object
