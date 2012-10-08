@@ -493,13 +493,17 @@
                 , sortIndicator = self.find('span.order')
             ;
 
-            if ((config.sortedOn || '') == name) {
-                sortDir = oppositeSort[config.sortedDir];
+            if (cols[name].sortable) {
+
+                if ((config.sortedOn || '') == name) {
+                    sortDir = oppositeSort[config.sortedDir];
+                }
+
+                sortIndicator.removeClass('asc desc').addClass(sortDir);
+
+                sort(name, sortDir);
+
             }
-
-            sortIndicator.removeClass('asc desc').addClass(sortDir);
-
-            sort(name, sortDir);
 
         }).on('click', 'td', function() {
             var self = $(this);
