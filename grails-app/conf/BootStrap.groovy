@@ -23,10 +23,10 @@ class BootStrap {
         def userRole = Authority.findByAuthority('ROLE_USER') ?: new Authority(authority: 'ROLE_USER').save(flush:true)
         def adminRole = Authority.findByAuthority('ROLE_ADMIN')?: new Authority(authority: 'ROLE_ADMIN').save(flush: true)
 
-        [[username: 'dave', realname: 'Dave Gunawan', password: '1234', role: userRole]
-            , [username: 'jonathan', realname: 'Jonathan Larson', password: '1234', role: adminRole]
-            , [username: 'brad', realname: 'Bradley Rhoades', password: '1234', role: userRole]
-            , [username: 'farouk', realname:'Farouk Althlathini', password: '1234', role: adminRole]
+        [[username: 'dave', realname: 'Dave Gunawan', password: '1234', enabled: true, role: userRole]
+            , [username: 'jonathan', realname: 'Jonathan Larson', password: '1234', enabled: true, role: adminRole]
+            , [username: 'brad', realname: 'Bradley Rhoades', password: '1234', enabled: true, role: userRole]
+            , [username: 'farouk', realname:'Farouk Althlathini', password: '1234', enabled: true, role: adminRole]
         ].eachWithIndex{ data, idx ->
             def user = Person.findByUsername(data.username)?: new Person(data).save(flush: true)
 
