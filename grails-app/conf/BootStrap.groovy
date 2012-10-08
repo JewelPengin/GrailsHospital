@@ -1,6 +1,7 @@
 import com.centurylink.hospital.auth.Authority
 import com.centurylink.hospital.auth.Person
 import com.centurylink.hospital.auth.PersonAuthority
+import com.centurylink.hospital.Room
 
 class BootStrap {
 
@@ -15,6 +16,7 @@ class BootStrap {
 	public void createData(){
 		def userRole = Authority.findByAuthority('ROLE_USER') ?: new Authority(authority: 'ROLE_USER').save(flush:true)
 		def adminRole = Authority.findByAuthority('ROLE_ADMIN')?: new Authority(authority: 'ROLE_ADMIN').save(flush: true)
+
 		[dave: [name: 'Dave Gunawan', role: userRole]
 			, jonathan: [name: 'Jonathan Larson', role: adminRole]
 			, brad: [name: 'Bradley Rhoades', role: userRole]
@@ -36,6 +38,34 @@ class BootStrap {
 		assert Person.count() == 4
 		assert Authority.count() == 2
 		assert PersonAuthority.count() == 4
+
+
+		/*** Rooms ***/
+		[[roomNumber: 1]
+			, [roomNumber: 2]
+			, [roomNumber: 3]
+			, [roomNumber: 4]
+			, [roomNumber: 5]
+			, [roomNumber: 6]
+			, [roomNumber: 7]
+			, [roomNumber: 8]
+			, [roomNumber: 9]
+			, [roomNumber: 10]
+		].eachWithIndex { data, idx ->
+
+			def room = new Room(data)
+			if (!room.validate()) {
+				room.errors.allErrors.each {
+					println it
+				}
+			} else {
+				room.save(flush: true)
+			}
+
+		}
+
+		assert Room.count() == 10
+
 	}
 
 	/*if (!user.validate()) {

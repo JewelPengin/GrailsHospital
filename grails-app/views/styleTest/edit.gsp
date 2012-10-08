@@ -38,7 +38,7 @@
 				<g:hiddenField name="id" value="${styleTestInstance?.id}" />
 				<g:hiddenField name="version" value="${styleTestInstance?.version}" />
 				<fieldset class="form">
-					<g:render template="form"/>
+					<g:render template="form" />
 				</fieldset>
 				<fieldset class="buttons">
 					<g:actionSubmit class="button" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />

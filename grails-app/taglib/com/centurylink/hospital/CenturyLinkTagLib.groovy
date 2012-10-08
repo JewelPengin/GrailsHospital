@@ -74,6 +74,8 @@ class CenturyLinkTagLib {
         }
         if (!attrs.containsKey('sortable')) {
             attrs.sortable = true
+        } else {
+            attrs.sortable = attrs.sortable.toBoolean()
         }
         if (!attrs.containsKey('order')) {
             attrs.order = 'asc'

@@ -9,6 +9,7 @@ class Nurse {
 
 	static constraints = {
 		supervisor nullable: true // A nurse doesn't have to have a supervisor
+		staffedRoom nullable: true // We need to be able to add a nurse without a room, add programmatic constraints
 	}
 
 }
