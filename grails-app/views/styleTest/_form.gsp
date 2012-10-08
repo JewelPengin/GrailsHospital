@@ -1,7 +1,9 @@
 <%@ page import="com.centurylink.hospital.StyleTest" %>
 <%
-	if (textOnly == null) {
-		textOnly = false;
+
+	textOnly = textOnly ?: false
+	if (actionName == 'show') {
+		textOnly = true
 	}
 %>
 

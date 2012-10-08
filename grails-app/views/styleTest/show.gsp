@@ -39,7 +39,7 @@
 				<g:hiddenField name="id" value="${styleTestInstance?.id}" />
 				<g:hiddenField name="version" value="${styleTestInstance?.version}" />
 				<fieldset class="form">
-					<g:render template="form" model="[textOnly: true]"/>
+					<g:render template="form" />
 				</fieldset>
 				<fieldset class="buttons">
 					<g:link class="button" action="edit" id="${styleTestInstance?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>

@@ -460,7 +460,7 @@
             col.label = col.label || col.name;
             col.type = col.type || 'string';
             col.renderer = col.renderer || col.type;
-            col.sortable = col.sortable || true;
+            col.sortable = col.sortable === undefined ? true : col.sortable;
             col.order = col.order || 'asc';
 
             if (typeof col.renderer === 'string') {
