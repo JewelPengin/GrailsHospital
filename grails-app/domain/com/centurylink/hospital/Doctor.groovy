@@ -6,6 +6,8 @@ class Doctor {
 	String lastName
 	static hasMany = [writtenPrescription: Prescription, primaryCarePatient: Patient]
 
-	static constraints = {}
+	static constraints = {
+        lastName blank: false
+    }
 
 }
