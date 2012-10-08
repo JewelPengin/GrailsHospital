@@ -14,13 +14,13 @@ class StyleTestController {
 	def test() {
 		def test
 		def params = [:]
-		for (def i = 1; i <= 50; i++) {
+		for (def i in 1..50) {
 			params.name = 'StyleTest ' + i
 			params.column1 = (i * 5).toString()
 			params.column2 = ((i - 2) * 3 / 2).toString()
 			params.column3 = (i + i).toString()
-			//test = new StyleTest(params)
-			//println test.save(flush: true)
+			test = new StyleTest(params)
+			println test.save(flush: true)
 			println params
 			println i
 		}
