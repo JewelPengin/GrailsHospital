@@ -2,6 +2,8 @@ package com.centurylink.hospital
 
 class Room {
 
+	Number roomNumber
+
 	static hasMany = [staff: Nurse, occupingPatient: Patient]
 
 	static constraints = {
