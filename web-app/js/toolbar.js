@@ -7,7 +7,7 @@
 			var topLevel = !!self.parent().parent('nav').length;
 
 			if (e.type == 'click') { // && !subs.length - maybe?
-				var link = self.children('a');
+				var link = self.children('a:first');
 				if (link.length) {
 					var href = link.prop('href');
 					if (href.match(/^javascript:/i)) {
