@@ -11,6 +11,58 @@
     <nav id="main-nav">
         <g:render template="/shared/nav" model="[nav: mainNav]" />
         <ul>
+            <li><span class="icon icon-info"></span>
+                <ul class="notifications">
+                    <li>
+                        <div class="message-icon">
+                            <span class="icon icon-invalid"></span>
+                        </div>
+                        <div class="message-text">
+                            <a href="/">This is a long message to remind someone that something is wrong and they need to do address it.</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="message-icon">
+                            <span class="icon icon-info"></span>
+                        </div>
+                        <div class="message-text">
+                            <a href="/">Today is <%= new Date() %>.</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="message-icon">
+                            <span class="icon icon-valid"></span>
+                        </div>
+                        <div class="message-text">
+                            <a href="/">Congratulations! Something was successfully set-up!</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="message-icon">
+                            <span class="icon icon-invalid"></span>
+                        </div>
+                        <div class="message-text">
+                            <a href="/">This is a long message to remind someone that something is wrong and they need to do address it.</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="message-icon">
+                            <span class="icon icon-info"></span>
+                        </div>
+                        <div class="message-text">
+                            <a href="/">Today is <%= new Date() %>.</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="message-icon">
+                            <span class="icon icon-valid"></span>
+                        </div>
+                        <div class="message-text">
+                            <a href="/">Congratulations! Something was successfully set-up!</a>
+                        </div>
+                    </li>
+                </ul>
+            </li>
             <li><a href="/logout">logout</a></li>
         </ul>
     </nav>
