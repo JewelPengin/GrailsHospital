@@ -1,8 +1,10 @@
-<%@ page import="com.centurylink.hospital.StyleTest" %>
+
+<%@ page import="com.centurylink.hospital.Doctor" %>
+<!doctype html>
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'styleTest.label', default: 'StyleTest')}" />
+		<g:set var="entityName" value="${message(code: 'doctor.label', default: 'Doctor')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -23,14 +25,16 @@
 					</ul>
 				</div>
 			</g:if>
-			<cl:grid name="${ entityName }Grid" data="${ list }" url="${createLink(action: 'show', params: [id: '{{id}}'])}" rows="9" reorderable="true">
-				<cl:column name="name" label="My Name Column" renderer="blob" numchars="6" />
-				<cl:column name="column1" />
-				<cl:column name="column2" />
-				<cl:column name="column3" />
+			<cl:grid name="${entityName}Grid" data="${list}" url="${createLink(action: 'show', params: [id: '{{id}}'])}" rows="15">
+				
+					<cl:column name="lastName" label="${message(code: 'doctor.lastName.label', default: 'Last Name')}" sortable="true" />
+				
+					<cl:column name="firstName" label="${message(code: 'doctor.firstName.label', default: 'First Name')}" sortable="true" />
+				
 			</cl:grid>
 		</section>
 
 		<footer></footer>
 	</body>
 </html>
+

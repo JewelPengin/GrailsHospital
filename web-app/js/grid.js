@@ -11,11 +11,22 @@
                 , numChars = config.numchars || 80
             // TODO: Clean HTML if need be
                 , cleanHTML = config.cleanhtml === undefined ? true : config.cleanhtml
+                , useTooltip = config.usetooltip === undefined ? true : config.usetooltip
+                , wasTruncated = false;
             ;
+
             if (val.length > numChars) {
-                return $.trim(val.substr(0, numChars - 3)) + '...';
+                val = $.trim(val.substr(0, numChars - 3)) + '...';
+                wasTruncated = true;
             }
-            return val;
+
+            return '<div class="table-blob"' +
+                    ' data-full="' + $('<div/>').html(str).text() + '"' +
+                    ' data-length="' + numChars + '"' +
+                    ' data-use-tooltip="' + useTooltip + '"' +
+                    ' data-was-truncated="' + wasTruncated + '">' +
+                    val +
+                    '</div>';
         }
         , email: function(str, col) {
             return '<a href="mailto:' + str + '">' + str + '</a>';
@@ -147,7 +158,9 @@
     }
 
 	$.fn.grid = function(config) {
-        var render
+        var container = this
+            , identifier = container.prop('id')
+            , render
             , getSortFunction
             , cols = {} // name/value pair for easier lookup
         ;
@@ -218,12 +231,157 @@
             };
         }
 
-        render = function() {
-            var tbody = config.table.find('tbody')
+        render = function(fullRender) {
+            var tbody
                 , numLinks = 2
                 , pagingControls
                 , usePaging
+                , fullRender = fullRender === undefined ? false : fullRender;
             ;
+
+            if (fullRender) {
+                container.empty();
+                container.append('<table><thead><tr></tr></thead><tbody></tbody><tfoot></tfoot></table>');
+                config.table = container.find('table:first');
+                var thead = config.table.find('thead > tr');
+                tbody = config.table.find('tbody');
+
+                for (var c = 0; c < config.columns.length; c++) {
+                    var col = config.columns[c];
+
+                    var header = $('<th data-name="' + col.name + '">' +
+                        (config.reorderableColumns ? '<div class="drag"></div>' : '') +
+                        col.label +
+                        (col.sortable ? ' <span class="order ' + col.order  + '"></span>' : '') +
+                        //(config.reorderableColumns ? '<div class="remove"></div>' : '') +
+                        '<div class="resize"></div>' +
+                    '</th>');
+
+                    thead.append(header);
+                }
+
+                config.table.on('click', 'th', function() {
+                    var self = $(this)
+                        , name = self.data('name')
+                        , sortDir = cols[name].order
+                        , sortIndicator = self.find('span.order')
+                    ;
+
+                    if (cols[name].sortable) {
+
+                        if (config.sortedOn == name) {
+                            sortDir = config.sortedDir;
+                        }
+
+                        sortDir = oppositeSort[sortDir];
+
+                        sortIndicator.removeClass('asc desc').addClass(sortDir);
+
+                        sort(name, sortDir);
+
+                    }
+
+                }).on('mouseover', 'th', function() {
+                    var self = $(this);
+                    self.children('.drag, .remove').show();
+                }).on('mouseout', 'th', function() {
+                    var self = $(this);
+                    self.children('.drag, .remove').hide();
+                }).on('click', 'th > .remove', function() {
+                    var self = $(this);
+                    var columnName = self.parent('th').data('name');
+                    for (var c = 0; c < config.columns.length; c++) {
+                        if (config.columns[c].name == columnName) {
+                            config.columns.splice(c, 1);
+                        }
+                    }
+                    render(true);
+                }).on('click', 'td', function() {
+                    var self = $(this);
+                    var rowIdx = self.parents('tr:first').data('idx');
+                    var url = '';
+
+                    if (self.data('url') !== undefined) {
+                        url = self.data('url');
+                    } else if (config.url != '') {
+                        url = config.url;
+                    }
+
+                    url = url.replace(/(\{|%7B){2}(.*?)(\}|%7D){2}/gi, function(v, c1, c2, c3) {
+                        var column = c2;
+                        if (config.data.length - 1 >= rowIdx && typeof config.data[rowIdx][column] != 'undefined') {
+                            return config.data[rowIdx][column];
+                        }
+
+                        return '';
+                    });
+
+                    if (url != '') {
+                        window.location = url;
+                    }
+                }).on('mouseover', 'td', function() {
+                    var self = $(this);
+                    var blobTooltipChild = self.children('div.table-blob[data-use-tooltip="true"]');
+
+                    if (blobTooltipChild.length) {
+                        var tooltipContainer = container.children('#' + identifier + 'TooltipContainer');
+
+                        if (!tooltipContainer.length) {
+                            container.append('<div id="' + identifier + 'TooltipContainer" class="table-blob-tooltip"></div>');
+                            tooltipContainer = container.children('#' + identifier + 'TooltipContainer');
+                        }
+
+                        self.on('mousemove', function(e) {
+                            var tooltipWidth = tooltipContainer.width();
+                            var offsetParent = tooltipContainer.offsetParent();
+                            var pOffset = offsetParent.offset();
+                            var pWidth = offsetParent.width();
+                            var leftOffset = 0;
+
+                            if (pOffset.left + pWidth <= e.pageX + tooltipWidth + 15) {
+                                leftOffset = e.pageX - pOffset.left - tooltipWidth - 15;
+                            } else {
+                                leftOffset = e.pageX - pOffset.left + 15;
+                            }
+
+                            tooltipContainer.css({'top': e.pageY - pOffset.top + 10, 'left': leftOffset});
+                        });
+
+                        tooltipContainer.html(blobTooltipChild.data('full')).show();
+
+                        self.mousemove();
+                    }
+                }).on('mouseout', 'td', function() {
+                    var self = $(this);
+                    var blobTooltipChild = self.children('div.table-blob[data-use-tooltip="true"]');
+
+                    if (blobTooltipChild.length) {
+                        self.unbind('mousemove');
+                        container.children('#' + identifier + 'TooltipContainer').hide().html("");
+                    }
+                }).on('sortchange', function() {
+                    //console.log('the element is sorting currently.');
+                });
+
+                if (config.reorderableColumns) {
+                    config.table.addClass('reorderable');
+                    config.table.sortable({
+                        items: 'th'
+                        , helper: 'clone'
+                        , handle: '.drag'
+                    });
+
+                    // TODO: handle column reordering events
+                }
+
+                thead.find('th').resizable({
+                    handles: 'e'
+                    , autoHide: true
+                });
+
+            } else {
+                tbody = config.table.find('tbody')
+            }
 
             tbody.empty();
 
@@ -232,17 +390,11 @@
                 var lastRow = ((i + 1) == config.data.length);
                 for (var c = 0; c < config.columns.length; c++) {
                     row += '<td' + (lastRow ? ' class="last-row"' : '') + '>' +
-                        config.columns[c].renderer(config.data[i][config.columns[c].name], {}) +
+                        config.columns[c].renderer(config.data[i][config.columns[c].name], config.columns[c]) +
                         '</td>';
                 }
                 tbody.append('<tr class="' + ((i + 1) % 2 ? 'even' : 'odd') + '" data-idx="' + i + '">' + row + '</tr>');
             }
-            pageClickHandler = function() {
-                var self = $(this)
-                    , page = self.data('page')
-                ;
-                getData(page);
-            };
 
             makePageButton = function(page, label, buttonClass) {
                 if (label === undefined) {
@@ -255,20 +407,21 @@
             };
 
 
-            pagingControls = config.table.parent().find('div.grid-paging');
+            pagingControls = container.find('div.grid-paging');
+            if (!pagingControls.length) {
+                // TODO: I feel like this could be done more efficiently, but something for later.
+                if (config.pagingLocation == 'bottom') {
+                    container.append('<div class="grid-paging"></div>');
+                } else {
+                    container.prepend('<div class="grid-paging"></div>');
+                }
+                pagingControls = container.find('div.grid-paging');
+            }
+            pagingControls.empty();
+
             usePaging = config.rows > 0 && config.dataLength > config.data.length;
 
             if (usePaging) {
-                if (!pagingControls.length) {
-                    // TODO: I feel like this could be done more efficiently, but something for later.
-                    if (config.pagingLocation == 'bottom') {
-                        config.table.parent().append('<div class="grid-paging"></div>');
-                    } else {
-                        config.table.parent().prepend('<div class="grid-paging"></div>');
-                    }
-                    pagingControls = config.table.parent().find('div.grid-paging');
-                }
-                pagingControls.empty();
                 numPages = Math.ceil(config.dataLength / config.rows);
                 useNumbersOnly = numPages <= 1 + numLinks * 2;
                 startRow = (config.rows * (config.page - 1)) + 1;
@@ -336,9 +489,46 @@
                     }
                 }
 
-                pagingControls.find('a').click(pageClickHandler);
+                pagingControls.append(' - ')
+
+                pagingControls.find('a').on('click', function() {
+                    var self = $(this)
+                        , page = self.data('page')
+                    ;
+                    getData(page);
+                });
 
             }
+
+            var rowList = [5, 10, 15, 25, 50, 100, 250, 500];
+            var rowOptions = '';
+            var rowSelected = '';
+
+            for (i = 0; i < rowList.length; i++) {
+                if (config.rows == rowList[i]) {
+                    rowSelected = ' selected="selected"';
+                } else {
+                    rowSelected = '';
+                }
+
+                rowOptions += '<option value="'+rowList[i]+'"'+ rowSelected +'>'+rowList[i]+'</option>';
+
+                if (rowList[i] >= config.dataLength) {
+                    break;
+                }
+
+                if ((i + 1) != rowList.length && config.rows > rowList[i] && config.rows < rowList[i+1]) {
+                    //add config.rows to the list
+                    rowOptions += '<option value="'+config.rows+'" selected="selected">'+config.rows+'</option>';
+                }
+            }
+
+            pagingControls.append('Rows: <select name="rows">'+rowOptions+'</select>');
+
+            pagingControls.find('select[name="rows"]').on('change', function() {
+                config.rows = $(this).val();
+                getData();
+            });
 
 
         }
@@ -442,12 +632,9 @@
             , pagingNumOnly: false
         }, config);
 
-        this.css('padding-bottom', '1px'); // hack for missing bottom border?
+        container.css('padding-bottom', '1px'); // hack for missing bottom border?
 
-        this.empty();
-        this.append('<table><thead><tr></tr></thead><tbody></tbody><tfoot></tfoot></table>');
-        config.table = this.find('table:first');
-        var thead = config.table.find('thead > tr');
+        container.empty();
 
         // column loop - do as much as you can here to cut back re-looping
         for (var c = 0; c < config.columns.length; c++) {
@@ -467,72 +654,10 @@
                 col.renderer = getRenderer(col);
             }
 
-            var header = $('<th data-name="' + col.name + '">' +
-                col.label +
-                (col.sortable ? ' <span class="order ' + col.order  + '"></span>' : '') +
-            '</th>');
-
-            thead.append(header);
-
-            cols[col.name] = col;
+            cols[col.name] = config.columns[c] = col;
         }
 
-        if (config.reorderableColumns) {
-            config.table.addClass('reorderable');
-            config.table.sortable({
-                items: 'th'
-            });
-
-            // TODO: handle column reordering events
-        }
-
-        config.table.on('click', 'th', function() {
-            var self = $(this)
-                , name = self.data('name')
-                , sortDir = cols[name].order
-                , sortIndicator = self.find('span.order')
-            ;
-
-            if (cols[name].sortable) {
-
-                if (config.sortedOn == name) {
-                    sortDir = config.sortedDir;
-                }
-
-                sortDir = oppositeSort[sortDir];
-
-                sortIndicator.removeClass('asc desc').addClass(sortDir);
-
-                sort(name, sortDir);
-
-            }
-
-        }).on('click', 'td', function() {
-            var self = $(this);
-            var rowIdx = self.parents('tr:first').data('idx');
-            var url = '';
-
-            if (self.data('url') !== undefined) {
-                url = self.data('url');
-            } else if (config.url != '') {
-                url = config.url;
-            }
-
-            url = url.replace(/(\{|%7B){2}(.*?)(\}|%7D){2}/gi, function(v, c1, c2, c3) {
-                var column = c2;
-                if (config.data.length - 1 >= rowIdx && typeof config.data[rowIdx][column] != 'undefined') {
-                    return config.data[rowIdx][column];
-                }
-
-                return '';
-            });
-
-            if (url != '') {
-                window.location = url;
-            }
-        });
-
-        render();
+        render(true);
 
         this.data('grid', this);
 

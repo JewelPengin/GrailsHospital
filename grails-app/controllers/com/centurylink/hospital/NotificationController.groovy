@@ -3,6 +3,7 @@ package com.centurylink.hospital
 class NotificationController {
 
     def index() { }
+
     def sendJMSMessageCall(){
         def c = Prescription.createCriteria()
         def expiredPrescription = c.list{
