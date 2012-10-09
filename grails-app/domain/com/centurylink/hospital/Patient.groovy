@@ -9,6 +9,7 @@ class Patient {
 
 	static constraints = {
 		occupiedRoom nullable: true
+        primaryCareDoctor nullable:true
 	}
 
 }

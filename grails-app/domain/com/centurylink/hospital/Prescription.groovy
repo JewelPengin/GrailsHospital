@@ -2,8 +2,13 @@ package com.centurylink.hospital
 
 class Prescription {
 
-	static hasOne = [receivingPatient: Patient, prescribedDrug: Drug, providingDoctor: Doctor]
+	Date dateCreated
+    Date expirationDate
 
-	static constraints = {}
+    static hasOne = [receivingPatient: Patient, prescribedDrug: Drug, providingDoctor: Doctor]
+
+	static constraints = {
+        expirationDate datetime: true
+    }
 
 }

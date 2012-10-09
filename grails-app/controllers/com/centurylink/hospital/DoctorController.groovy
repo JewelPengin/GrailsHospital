@@ -15,7 +15,12 @@ class DoctorController {
 	}
 
 	def list(Integer max) {
-		def listReturn = [:]
+
+        //JMS notify expired prescriptions
+        NotificationController nControl =  new NotificationController()
+        nControl.sendJMSMessageCall()
+
+        def listReturn = [:]
 		params.max = Math.min(max ?: 20, 100)
 		listReturn.list = Doctor.list(params)
 		listReturn.count = Doctor.count()
