@@ -359,8 +359,15 @@
                         self.unbind('mousemove');
                         container.children('#' + identifier + 'TooltipContainer').hide().html("");
                     }
-                }).on('sortchange', function() {
-                    //console.log('the element is sorting currently.');
+                }).on('sortupdate', function() {
+                    var headers = config.table.find('thead > tr:first > th');
+                    var newColumnOrder = [];
+                    headers.each(function() {
+                        var self = $(this);
+                        newColumnOrder.push(cols[self.data('name')]);
+                    });
+                    config.columns = newColumnOrder;
+                    render(true);
                 });
 
                 if (config.reorderableColumns) {
@@ -370,8 +377,6 @@
                         , helper: 'clone'
                         , handle: '.drag'
                     });
-
-                    // TODO: handle column reordering events
                 }
 
                 thead.find('th').resizable({
