@@ -1,7 +1,7 @@
 package com.centurylink.hospital
 
-import grails.plugins.springsecurity.Secured
 import org.springframework.dao.DataIntegrityViolationException
+import grails.plugins.springsecurity.Secured
 import grails.converters.JSON
 
 @Secured (['ROLE_USER', 'ROLE_ADMIN'])
@@ -107,14 +107,5 @@ class DoctorController {
 			return
 		}
 
-		try {
-			doctorInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'doctor.label', default: 'Doctor'), id])
-			redirect(action: "list")
-		}
-		catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doctor.label', default: 'Doctor'), id])
-			redirect(action: "show", id: id)
-		}
-	}
+}
 }

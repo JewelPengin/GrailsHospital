@@ -489,17 +489,23 @@
         config.table.on('click', 'th', function() {
             var self = $(this)
                 , name = self.data('name')
-                , sortDir = 'asc'
+                , sortDir = cols[name].order
                 , sortIndicator = self.find('span.order')
             ;
 
-            if ((config.sortedOn || '') == name) {
-                sortDir = oppositeSort[config.sortedDir];
+            if (cols[name].sortable) {
+
+                if (config.sortedOn == name) {
+                    sortDir = config.sortedDir;
+                }
+
+                sortDir = oppositeSort[sortDir];
+
+                sortIndicator.removeClass('asc desc').addClass(sortDir);
+
+                sort(name, sortDir);
+
             }
-
-            sortIndicator.removeClass('asc desc').addClass(sortDir);
-
-            sort(name, sortDir);
 
         }).on('click', 'td', function() {
             var self = $(this);

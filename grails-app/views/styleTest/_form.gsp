@@ -1,11 +1,5 @@
 <%@ page import="com.centurylink.hospital.StyleTest" %>
-<%
-
-	textOnly = textOnly ?: false
-	if (actionName == 'show') {
-		textOnly = true
-	}
-%>
+<% textOnly = textOnly ?: false; if (actionName == 'show') { textOnly = true } %>
 
 <div class="field-container ${hasErrors(bean: styleTestInstance, field: 'column1', 'error')} ">
 	<div class="label">
@@ -13,12 +7,14 @@
 			<g:message code="styleTest.column1.label" default="Column1" />
 		</label>
 	</div>
-	<g:if test="${ !textOnly }">
-		<g:textField name="column1" value="${styleTestInstance?.column1}"/>
-	</g:if>
-	<g:else>
-		${styleTestInstance?.column1}
-	</g:else>
+	<div class="field">
+		<g:if test="${ !textOnly }">
+			<g:textField name="column1" value="${styleTestInstance?.column1}"/>
+		</g:if>
+		<g:else>
+			${styleTestInstance?.column1}
+		</g:else>
+	</div>
 </div>
 
 <div class="field-container ${hasErrors(bean: styleTestInstance, field: 'column2', 'error')} ">
@@ -27,12 +23,14 @@
 			<g:message code="styleTest.column2.label" default="Column2" />
 		</label>
 	</div>
-	<g:if test="${ !textOnly }">
-		<g:textField name="column2" value="${styleTestInstance?.column2}"/>
-	</g:if>
-	<g:else>
-		${styleTestInstance?.column2}
-	</g:else>
+	<div class="field">
+		<g:if test="${ !textOnly }">
+			<g:textField name="column2" value="${styleTestInstance?.column2}"/>
+		</g:if>
+		<g:else>
+			${styleTestInstance?.column2}
+		</g:else>
+	</div>
 </div>
 
 <div class="field-container ${hasErrors(bean: styleTestInstance, field: 'column3', 'error')} ">
@@ -41,12 +39,14 @@
 			<g:message code="styleTest.column3.label" default="Column3" />
 		</label>
 	</div>
-	<g:if test="${ !textOnly }">
-		<g:textField name="column3" value="${styleTestInstance?.column3}"/>
-	</g:if>
-	<g:else>
-		${styleTestInstance?.column3}
-	</g:else>
+	<div class="field">
+		<g:if test="${ !textOnly }">
+			<g:textField name="column3" value="${styleTestInstance?.column3}"/>
+		</g:if>
+		<g:else>
+			${styleTestInstance?.column3}
+		</g:else>
+	</div>
 </div>
 
 <div class="field-container ${hasErrors(bean: styleTestInstance, field: 'name', 'error')} ">
@@ -55,10 +55,12 @@
 			<g:message code="styleTest.name.label" default="Name" />
 		</label>
 	</div>
-	<g:if test="${ !textOnly }">
-		<g:textField name="name" value="${styleTestInstance?.name}"/>
-	</g:if>
-	<g:else>
-		${styleTestInstance?.name}
-	</g:else>
+	<div class="field">
+		<g:if test="${ !textOnly }">
+			<g:textField name="name" value="${styleTestInstance?.name}"/>
+		</g:if>
+		<g:else>
+			${styleTestInstance?.name}
+		</g:else>
+	</div>
 </div>
