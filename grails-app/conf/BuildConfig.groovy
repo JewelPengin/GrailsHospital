@@ -36,6 +36,7 @@ grails.project.dependency.resolution = {
 
         runtime 'mysql:mysql-connector-java:5.1.20'
         runtime 'org.apache.commons:commons-lang3:3.0'
+        //runtime 'org.eclipse.jetty:jetty-websocket:7.6.0.v20120127'
     }
 
     plugins {
@@ -52,11 +53,12 @@ grails.project.dependency.resolution = {
 
         runtime ":database-migration:1.1"
 
-        build ":tomcat:$grailsVersion"
+        build ":jetty:2.0.1" // Jetty 7.6.0
 
         compile ':cache:1.0.0'
         compile ":executor:0.3"
-        compile ":cometd:0.2.2"
+        //compile ":cometd:0.2.2"
+        compile ":atmosphere:0.4.2.1"
         compile ":jms:1.2"
         compile ":activemq:0.4.1"
     }
