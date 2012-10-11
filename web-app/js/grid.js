@@ -163,6 +163,8 @@
             , render
             , getSortFunction
             , cols = {} // name/value pair for easier lookup
+            , cookieName = 'grid_' + identifier + '_persist'
+            , cookieValue = $.cookie(cookieName) || undefined
         ;
 
         getSortFunction = function(key, asc) {
@@ -535,6 +537,8 @@
                 getData();
             });
 
+            console.log('right before setCookie')
+            setCookie();
 
         }
 
@@ -574,8 +578,8 @@
         }
 
         sort = function(col, dir) {
-            config.sortedOn = col;
-            config.sortedDir = dir;
+            config.sortedOn = col || config.sortedOn;
+            config.sortedDir = dir || config.sortedDir;
 
             if (config.dataLength <= config.data.length) {
                 config.data.sort(getSortFunction(config.sortedOn, !!(config.sortedDir == 'asc')));
@@ -586,10 +590,11 @@
             }
         }
 
-        getData = function(page, col, dir) {
+        getData = function(page, col, dir, rows) {
             page = page || config.page || 1
             col = col || config.sortedOn || ''
             dir = dir || config.sortedDir || 'asc'
+            rows = rows || config.rows || -1
 
             // TODO: implement caching
 
@@ -601,12 +606,13 @@
                         offset: config.rows * (page - 1)
                         , sort: (col == '' ? undefined : col)
                         , order: dir
-                        , max: config.rows
+                        , max: rows
                     }
                 }).done(function(returnData) {
                     config.page = page;
                     config.sortedOn = col;
                     config.sortedDir = dir;
+                    config.rows = rows;
                     config.data = returnData.list.list; // odd formatting I know, but it's what I decided on.
                     render();
                 }).fail(function() {
@@ -614,6 +620,25 @@
                 })
             }
 
+        }
+
+        setCookie = function() {
+            console.log('got to set cookie!');
+
+            if (!config.persist) {
+                return;
+            }
+
+            var value = {
+                sortedOn: config.sortedOn
+                , sortedDir: config.sortedDir
+                , page: config.page
+                , rows: config.rows
+            };
+
+            console.log(value);
+
+            $.cookie(cookieName, JSON.stringify(value), {expires: 1});
         }
 
         /******** init section ********/
@@ -635,6 +660,7 @@
             , pagingShowAll: false
             , pagingUseWords: false
             , pagingNumOnly: false
+            , persist: true
         }, config);
 
         container.css('padding-bottom', '1px'); // hack for missing bottom border?
@@ -662,7 +688,32 @@
             cols[col.name] = config.columns[c] = col;
         }
 
-        render(true);
+        if (config.persist && cookieValue !== undefined) {
+            cookieValue = $.parseJSON(cookieValue);
+            if (cookieValue.sortedOn !== undefined && cols[cookieValue.sortedOn] !== undefined) {
+                config.sortedOn = cookieValue.sortedOn;
+            }
+            if (cookieValue.sortedDir !== undefined) {
+                config.sortedDir = cookieValue.sortedDir;
+            }
+            if (cookieValue.page !== undefined) {
+                var cookiePage = parseInt(cookieValue.page);
+                var numPages = config.rows <= 0 ? 1 : Math.ceil(config.dataLength / config.rows);
+                if (cookiePage <= numPages) {
+                    config.page = cookieValue.page;
+                }
+            }
+            // TODO: need to fix this... redundant...
+            // TODO: if numPages == 1
+            render(true);
+            if (numPages == 1) {
+                sort();
+            } else {
+                getData();
+            }
+        } else {
+            render(true);
+        }
 
         this.data('grid', this);
 
