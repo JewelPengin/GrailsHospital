@@ -185,6 +185,55 @@ header#toolbar {
 	}
 }
 
+.grid-container {
+	position: relative;
+
+	.grid-top, .grid-bottom {
+		position: relative;
+		height: 16px;
+		padding: 5px 0;
+	}
+
+	.grid-settings {
+		position: absolute;
+		z-index: 1;
+		right: 0;
+		top: 5px;
+		width: 16px;
+		height: 16px;
+		background: #fff url('@{iconPath}cog.png') no-repeat right top;
+		cursor: pointer;
+
+		.grid-settings-container {
+			display: none;
+			width: 150px;
+			background-color: white;
+			position: absolute;
+			right: 0;
+			opacity: 1;
+			top: 18px;
+			text-align: right;
+			border: 1px solid black;
+			.border-radius(0, 5px, 5px, 5px);
+			padding: 5px;
+			cursor: auto;
+		}
+	}
+
+	.grid-paging {
+		.inline-block-middle;
+
+		span {
+			.inline-block;
+			padding: 0px 5px;
+			font-weight: bold;
+		}
+		a span {
+			font-weight: normal;
+		}
+	}
+}
+
 table {
 	width: 100%;
 	cursor: pointer;
@@ -304,19 +353,6 @@ table {
 				border: 0;
 			}
 		}
-	}
-}
-
-.grid-paging {
-	padding: 5px 0;
-
-	span {
-		.inline-block;
-		padding: 0px 5px;
-		font-weight: bold;
-	}
-	a span {
-		font-weight: normal;
 	}
 }
 

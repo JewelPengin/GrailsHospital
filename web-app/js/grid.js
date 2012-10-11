@@ -242,13 +242,14 @@
             var tbody
                 , numLinks = 2
                 , pagingControls
+                , settingControls
                 , usePaging
                 , renderMode = renderMode === undefined ? renderModes.HEADBODY : renderMode;
             ;
 
             if (renderMode == renderModes.HEAD || renderMode == renderModes.HEADBODY) {
                 container.empty();
-                container.append('<table><thead><tr></tr></thead><tbody></tbody><tfoot></tfoot></table>');
+                container.append('<div class="grid-top"></div><table><thead><tr></tr></thead><tbody></tbody><tfoot></tfoot></table><div class="grid-bottom"></div>');
                 config.table = container.find('table:first');
                 var thead = config.table.find('thead > tr');
                 tbody = config.table.find('tbody');
@@ -409,6 +410,58 @@
                     tbody.append('<tr class="' + ((i + 1) % 2 ? 'even' : 'odd') + '" data-idx="' + i + '">' + row + '</tr>');
                 }
 
+                /**** grid settings button ****/
+
+                settingControls = container.find('div.grid-settings');
+                if (!settingControls.length) {
+                    container.find('.grid-top').prepend('<div class="grid-settings"></div>');
+                    settingControls = container.find('div.grid-settings');
+                    settingControls.append('<div class="grid-settings-container"></div>');
+                    var settingsContainer = settingControls.find('.grid-settings-container');
+
+                    var rowList = [5, 10, 15, 25, 50, 100, 250, 500];
+                    var rowOptions = '';
+                    var rowSelected = '';
+
+                    for (i = 0; i < rowList.length; i++) {
+                        if (config.rows == rowList[i]) {
+                            rowSelected = ' selected="selected"';
+                        } else {
+                            rowSelected = '';
+                        }
+
+                        rowOptions += '<option value="'+rowList[i]+'"'+ rowSelected +'>'+rowList[i]+'</option>';
+
+                        if (rowList[i] >= config.dataLength) {
+                            break;
+                        }
+
+                        if ((i + 1) != rowList.length && config.rows > rowList[i] && config.rows < rowList[i+1]) {
+                            //add config.rows to the list
+                            rowOptions += '<option value="'+config.rows+'" selected="selected">'+config.rows+'</option>';
+                        }
+                    }
+
+                    settingsContainer.append('<div>Rows: <select name="rows">'+rowOptions+'</select></div>');
+
+                    settingControls.find('select[name="rows"]').on('change', function() {
+                        config.rows = $(this).val();
+                        getData();
+                    });
+
+                    settingsContainer.append('<div><a href="#" class="clear-grid-settings button">Clear Saved Grid Settings</a></div>')
+
+                    settingsContainer.find('a.clear-grid-settings').on('click', function(e) {
+                        $.removeCookie(cookieName);
+                        e.preventDefault();
+                    });
+
+                    settingControls.on('click', function() {
+                        var self = $(this);
+                        self.find('.grid-settings-container').fadeToggle();
+                    });
+                }
+
                 makePageButton = function(page, label, buttonClass) {
                     if (label === undefined) {
                         label = page;
@@ -422,12 +475,9 @@
 
                 pagingControls = container.find('div.grid-paging');
                 if (!pagingControls.length) {
-                    // TODO: I feel like this could be done more efficiently, but something for later.
-                    if (config.pagingLocation == 'bottom') {
-                        container.append('<div class="grid-paging"></div>');
-                    } else {
-                        container.prepend('<div class="grid-paging"></div>');
-                    }
+                    console.log(config.pagingLocation);
+                    console.log(container.find('.grid-' + config.pagingLocation));
+                    container.find('.grid-' + config.pagingLocation).append('<div class="grid-paging"></div>');
                     pagingControls = container.find('div.grid-paging');
                 }
                 pagingControls.empty();
@@ -502,8 +552,6 @@
                         }
                     }
 
-                    pagingControls.append(' - ')
-
                     pagingControls.find('a').on('click', function() {
                         var self = $(this)
                             , page = self.data('page')
@@ -512,36 +560,6 @@
                     });
 
                 }
-
-                var rowList = [5, 10, 15, 25, 50, 100, 250, 500];
-                var rowOptions = '';
-                var rowSelected = '';
-
-                for (i = 0; i < rowList.length; i++) {
-                    if (config.rows == rowList[i]) {
-                        rowSelected = ' selected="selected"';
-                    } else {
-                        rowSelected = '';
-                    }
-
-                    rowOptions += '<option value="'+rowList[i]+'"'+ rowSelected +'>'+rowList[i]+'</option>';
-
-                    if (rowList[i] >= config.dataLength) {
-                        break;
-                    }
-
-                    if ((i + 1) != rowList.length && config.rows > rowList[i] && config.rows < rowList[i+1]) {
-                        //add config.rows to the list
-                        rowOptions += '<option value="'+config.rows+'" selected="selected">'+config.rows+'</option>';
-                    }
-                }
-
-                pagingControls.append('Rows: <select name="rows">'+rowOptions+'</select>');
-
-                pagingControls.find('select[name="rows"]').on('change', function() {
-                    config.rows = $(this).val();
-                    getData();
-                });
 
                 setCookie();
             }

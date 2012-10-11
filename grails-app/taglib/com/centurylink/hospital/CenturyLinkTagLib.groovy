@@ -53,7 +53,7 @@ class CenturyLinkTagLib {
                 });
             """
         }
-        out << "<div id=\"${ attrs.id }\"></div>"
+        out << "<div id=\"${ attrs.id }\" class=\"grid-container\"></div>"
 
         helpers.endTag()
     }
