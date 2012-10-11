@@ -45,7 +45,7 @@ class CenturyLinkTagLib {
                         data: ${ dataList.encodeAsJSON() }
                         , columns: ${ columnData.encodeAsJSON() }
                         , url: '${ (localData.attrs.url ?: '').encodeAsJavaScript() }'
-                        , dataUrl: '${ (localData.attrs.dataUrl ?: createLink(action: 'list') + '.json').encodeAsJavaScript() }'
+                        , dataUrl: '${ (localData.attrs.dataUrl != null ? localData.attrs.dataUrl : createLink(action: 'list') + '.json').encodeAsJavaScript() }'
                         , reorderableColumns: ${ localData.attrs.reorderable ? 'true' : 'false'}
                         , rows: ${ localData.attrs.rows }
                         , dataLength: ${ localData.attrs.data.count }

@@ -12,9 +12,12 @@ class Person {
 	boolean accountLocked
 	boolean passwordExpired
 
+	static hasMany = [settings: com.centurylink.hospital.UserSetting]
+
 	static constraints = {
 		username blank: false, unique: true
 		password blank: false
+		settings nullable: true
 	}
 
 	static mapping = {
