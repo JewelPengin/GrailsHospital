@@ -298,9 +298,10 @@
                     for (var c = 0; c < config.columns.length; c++) {
                         if (config.columns[c].name == columnName) {
                             config.columns.splice(c, 1);
+                            break;
                         }
                     }
-                    render(true);
+                    render(renderModes.HEADBODY);
                 }).on('click', 'td', function() {
                     var self = $(this);
                     var rowIdx = self.parents('tr:first').data('idx');
@@ -372,7 +373,7 @@
                         newColumnOrder.push(cols[self.data('name')]);
                     });
                     config.columns = newColumnOrder;
-                    render(true);
+                    render(renderModes.HEADBODY);
                 });
 
                 if (config.reorderableColumns) {
@@ -650,11 +651,18 @@
                 return;
             }
 
+            var columnOrder = [];
+
+            $.each(config.columns, function() {
+                columnOrder.push(this.name);
+            });
+
             var value = {
                 sortedOn: config.sortedOn
                 , sortedDir: config.sortedDir
                 , page: config.page
                 , rows: config.rows
+                , columnOrder: columnOrder
             };
 
             $.cookie(cookieName, JSON.stringify(value), {expires: 1});
@@ -724,6 +732,18 @@
                 if (cookiePage <= numPages) {
                     config.page = cookieValue.page;
                 }
+            }
+            if (cookieValue.columnOrder !== undefined && $.isArray(cookieValue.columnOrder)) {
+                var newColumns = [];
+                $.each(cookieValue.columnOrder, function(idx) {
+                    for (var c = 0; c < config.columns.length; c++) {
+                        if (config.columns[c].name == this) {
+                            newColumns.push(config.columns.splice(c, 1)[0]);
+                            break;
+                        }
+                    }
+                });
+                config.columns = newColumns.concat(config.columns);
             }
 
             render(renderModes.HEAD);
