@@ -1,4 +1,9 @@
 (function($) {
+    var renderModes = {
+        HEAD: 0
+        , BODY: 1
+        , HEADBODY: 2
+    }
     var renderers = {
         string: function(str, config) {
             return str;
@@ -233,15 +238,15 @@
             };
         }
 
-        render = function(fullRender) {
+        render = function(renderMode) {
             var tbody
                 , numLinks = 2
                 , pagingControls
                 , usePaging
-                , fullRender = fullRender === undefined ? false : fullRender;
+                , renderMode = renderMode === undefined ? renderModes.HEADBODY : renderMode;
             ;
 
-            if (fullRender) {
+            if (renderMode == renderModes.HEAD || renderMode == renderModes.HEADBODY) {
                 container.empty();
                 container.append('<table><thead><tr></tr></thead><tbody></tbody><tfoot></tfoot></table>');
                 config.table = container.find('table:first');
@@ -250,11 +255,12 @@
 
                 for (var c = 0; c < config.columns.length; c++) {
                     var col = config.columns[c];
+                    var colOrder = config.sortedOn == col.name ? config.sortedDir : col.order;
 
                     var header = $('<th data-name="' + col.name + '">' +
                         (config.reorderableColumns ? '<div class="drag"></div>' : '') +
                         col.label +
-                        (col.sortable ? ' <span class="order ' + col.order  + '"></span>' : '') +
+                        (col.sortable ? ' <span class="order ' + colOrder  + '"></span>' : '') +
                         //(config.reorderableColumns ? '<div class="remove"></div>' : '') +
                         '<div class="resize"></div>' +
                     '</th>');
@@ -266,7 +272,6 @@
                     var self = $(this)
                         , name = self.data('name')
                         , sortDir = cols[name].order
-                        , sortIndicator = self.find('span.order')
                     ;
 
                     if (cols[name].sortable) {
@@ -276,8 +281,6 @@
                         }
 
                         sortDir = oppositeSort[sortDir];
-
-                        sortIndicator.removeClass('asc desc').addClass(sortDir);
 
                         sort(name, sortDir);
 
@@ -390,155 +393,157 @@
                 tbody = config.table.find('tbody')
             }
 
-            tbody.empty();
+            if (renderMode == renderModes.BODY || renderMode == renderModes.HEADBODY) {
 
-            for (var i = 0; i < config.data.length; i++) {
-                var row = '';
-                var lastRow = ((i + 1) == config.data.length);
-                for (var c = 0; c < config.columns.length; c++) {
-                    row += '<td' + (lastRow ? ' class="last-row"' : '') + '>' +
-                        config.columns[c].renderer(config.data[i][config.columns[c].name], config.columns[c]) +
-                        '</td>';
-                }
-                tbody.append('<tr class="' + ((i + 1) % 2 ? 'even' : 'odd') + '" data-idx="' + i + '">' + row + '</tr>');
-            }
+                tbody.empty();
 
-            makePageButton = function(page, label, buttonClass) {
-                if (label === undefined) {
-                    label = page;
+                for (var i = 0; i < config.data.length; i++) {
+                    var row = '';
+                    var lastRow = ((i + 1) == config.data.length);
+                    for (var c = 0; c < config.columns.length; c++) {
+                        row += '<td' + (lastRow ? ' class="last-row"' : '') + '>' +
+                            config.columns[c].renderer(config.data[i][config.columns[c].name], config.columns[c]) +
+                            '</td>';
+                    }
+                    tbody.append('<tr class="' + ((i + 1) % 2 ? 'even' : 'odd') + '" data-idx="' + i + '">' + row + '</tr>');
                 }
-                if (buttonClass === undefined) {
-                    buttonClass = ' class="page-button" ';
-                }
-                return '<a href="javascript:void(0);" data-page="' + page + '"' + buttonClass + '><span>' + label + '</span></a>';
-            };
+
+                makePageButton = function(page, label, buttonClass) {
+                    if (label === undefined) {
+                        label = page;
+                    }
+                    if (buttonClass === undefined) {
+                        buttonClass = ' class="page-button" ';
+                    }
+                    return '<a href="javascript:void(0);" data-page="' + page + '"' + buttonClass + '><span>' + label + '</span></a>';
+                };
 
 
-            pagingControls = container.find('div.grid-paging');
-            if (!pagingControls.length) {
-                // TODO: I feel like this could be done more efficiently, but something for later.
-                if (config.pagingLocation == 'bottom') {
-                    container.append('<div class="grid-paging"></div>');
-                } else {
-                    container.prepend('<div class="grid-paging"></div>');
-                }
                 pagingControls = container.find('div.grid-paging');
-            }
-            pagingControls.empty();
-
-            usePaging = config.rows > 0 && config.dataLength > config.data.length;
-
-            if (usePaging) {
-                numPages = Math.ceil(config.dataLength / config.rows);
-                useNumbersOnly = numPages <= 1 + numLinks * 2;
-                startRow = (config.rows * (config.page - 1)) + 1;
-                endRow = config.rows * config.page;
-                if (endRow > config.dataLength) {
-                    endRow = config.dataLength;
-                }
-
-                // don't always need to show this text
-                if (config.pagingNumOnly === false) {
-                    pagingControls.append('Showing rows ' + startRow + '-' + endRow + ' of ' + config.dataLength + ' - ');
-                }
-
-                // add << and < buttons
-                if (config.page > 1 && !useNumbersOnly) {
-                    if (config.pagingUseWords === false) {
-                        pagingControls.append(makePageButton(1, '&lt;&lt;', ' class="page-first" '));
-                        pagingControls.append(makePageButton(config.page - 1, '&lt;', ' class="page-previous" '));
+                if (!pagingControls.length) {
+                    // TODO: I feel like this could be done more efficiently, but something for later.
+                    if (config.pagingLocation == 'bottom') {
+                        container.append('<div class="grid-paging"></div>');
                     } else {
-                        pagingControls.append(makePageButton(1, 'First', ' class="page-first" '));
-                        pagingControls.append(makePageButton(config.page - 1, 'Previous', ' class="page-previous" '));
+                        container.prepend('<div class="grid-paging"></div>');
                     }
-                } else if (config.pagingShowAll === true && !useNumbersOnly) {
-                    if (config.pagingUseWords === false) {
-                        pagingControls.append('<span class="page-first-inactive">&lt;&lt;</span>');
-                        pagingControls.append('<span class="page-previous-inactive">&lt;</span>');
+                    pagingControls = container.find('div.grid-paging');
+                }
+                pagingControls.empty();
+
+                usePaging = config.rows > 0 && config.dataLength > config.data.length;
+
+                if (usePaging) {
+                    numPages = Math.ceil(config.dataLength / config.rows);
+                    useNumbersOnly = numPages <= 1 + numLinks * 2;
+                    startRow = (config.rows * (config.page - 1)) + 1;
+                    endRow = config.rows * config.page;
+                    if (endRow > config.dataLength) {
+                        endRow = config.dataLength;
+                    }
+
+                    // don't always need to show this text
+                    if (config.pagingNumOnly === false) {
+                        pagingControls.append('Showing rows ' + startRow + '-' + endRow + ' of ' + config.dataLength + ' - ');
+                    }
+
+                    // add << and < buttons
+                    if (config.page > 1 && !useNumbersOnly) {
+                        if (config.pagingUseWords === false) {
+                            pagingControls.append(makePageButton(1, '&lt;&lt;', ' class="page-first" '));
+                            pagingControls.append(makePageButton(config.page - 1, '&lt;', ' class="page-previous" '));
+                        } else {
+                            pagingControls.append(makePageButton(1, 'First', ' class="page-first" '));
+                            pagingControls.append(makePageButton(config.page - 1, 'Previous', ' class="page-previous" '));
+                        }
+                    } else if (config.pagingShowAll === true && !useNumbersOnly) {
+                        if (config.pagingUseWords === false) {
+                            pagingControls.append('<span class="page-first-inactive">&lt;&lt;</span>');
+                            pagingControls.append('<span class="page-previous-inactive">&lt;</span>');
+                        } else {
+                            pagingControls.append('<span class="page-first-inactive">First</span>');
+                            pagingControls.append('<span class="page-previous-inactive">Previous</span>');
+                        }
+                    }
+
+                    // we want 5 links from 2 pages back to 2 pages forward, or up to 4 pages forward or back if we're on one side or the other
+                    numLeft = Math.max(0, Math.min(config.page - 1, numLinks));
+                    numRight = Math.max(0, Math.min(numPages - config.page, numLinks));
+                    numLeft += Math.max(0, Math.min(numLinks - numRight, config.page - numLinks - 1));
+                    numRight += Math.max(0, Math.min(numLinks - numLeft, numPages - config.page - numLinks));
+
+                    for (i = numLeft; i > 0; i--) {
+                        pagingControls.append(makePageButton(config.page - i));
+                    }
+
+                    pagingControls.append('<span class="current-page">' + config.page + '</span>');
+
+                    for (i = 1; i <= numRight; i++) {
+                        pagingControls.append(makePageButton(config.page + i));
+                    }
+
+                    // add > and >> buttons
+                    if (config.page < numPages && !useNumbersOnly) {
+                        if (config.pagingUseWords === false) {
+                            pagingControls.append(makePageButton(config.page + 1, '&gt;', ' class="page-next" '));
+                            pagingControls.append(makePageButton(numPages, '&gt;&gt;', ' class="page-last" '));
+                        } else {
+                            pagingControls.append(makePageButton(config.page + 1, 'Next', ' class="page-next" '));
+                            pagingControls.append(makePageButton(numPages, 'Last', ' class="page-last" '));
+                        }
+                    } else if (config.pagingShowAll === true && !useNumbersOnly) {
+                        if (config.pagingUseWords === false) {
+                            pagingControls.append('<span class="page-next-inactive">&gt;</span>');
+                            pagingControls.append('<span class="page-last-inactive">&gt;&gt;</span>');
+                        } else {
+                            pagingControls.append('<span class="page-next-inactive">Next</span>');
+                            pagingControls.append('<span class="page-last-inactive">Last</span>');
+                        }
+                    }
+
+                    pagingControls.append(' - ')
+
+                    pagingControls.find('a').on('click', function() {
+                        var self = $(this)
+                            , page = self.data('page')
+                        ;
+                        getData(page);
+                    });
+
+                }
+
+                var rowList = [5, 10, 15, 25, 50, 100, 250, 500];
+                var rowOptions = '';
+                var rowSelected = '';
+
+                for (i = 0; i < rowList.length; i++) {
+                    if (config.rows == rowList[i]) {
+                        rowSelected = ' selected="selected"';
                     } else {
-                        pagingControls.append('<span class="page-first-inactive">First</span>');
-                        pagingControls.append('<span class="page-previous-inactive">Previous</span>');
+                        rowSelected = '';
+                    }
+
+                    rowOptions += '<option value="'+rowList[i]+'"'+ rowSelected +'>'+rowList[i]+'</option>';
+
+                    if (rowList[i] >= config.dataLength) {
+                        break;
+                    }
+
+                    if ((i + 1) != rowList.length && config.rows > rowList[i] && config.rows < rowList[i+1]) {
+                        //add config.rows to the list
+                        rowOptions += '<option value="'+config.rows+'" selected="selected">'+config.rows+'</option>';
                     }
                 }
 
-                // we want 5 links from 2 pages back to 2 pages forward, or up to 4 pages forward or back if we're on one side or the other
-                numLeft = Math.max(0, Math.min(config.page - 1, numLinks));
-                numRight = Math.max(0, Math.min(numPages - config.page, numLinks));
-                numLeft += Math.max(0, Math.min(numLinks - numRight, config.page - numLinks - 1));
-                numRight += Math.max(0, Math.min(numLinks - numLeft, numPages - config.page - numLinks));
+                pagingControls.append('Rows: <select name="rows">'+rowOptions+'</select>');
 
-                for (i = numLeft; i > 0; i--) {
-                    pagingControls.append(makePageButton(config.page - i));
-                }
-
-                pagingControls.append('<span class="current-page">' + config.page + '</span>');
-
-                for (i = 1; i <= numRight; i++) {
-                    pagingControls.append(makePageButton(config.page + i));
-                }
-
-                // add > and >> buttons
-                if (config.page < numPages && !useNumbersOnly) {
-                    if (config.pagingUseWords === false) {
-                        pagingControls.append(makePageButton(config.page + 1, '&gt;', ' class="page-next" '));
-                        pagingControls.append(makePageButton(numPages, '&gt;&gt;', ' class="page-last" '));
-                    } else {
-                        pagingControls.append(makePageButton(config.page + 1, 'Next', ' class="page-next" '));
-                        pagingControls.append(makePageButton(numPages, 'Last', ' class="page-last" '));
-                    }
-                } else if (config.pagingShowAll === true && !useNumbersOnly) {
-                    if (config.pagingUseWords === false) {
-                        pagingControls.append('<span class="page-next-inactive">&gt;</span>');
-                        pagingControls.append('<span class="page-last-inactive">&gt;&gt;</span>');
-                    } else {
-                        pagingControls.append('<span class="page-next-inactive">Next</span>');
-                        pagingControls.append('<span class="page-last-inactive">Last</span>');
-                    }
-                }
-
-                pagingControls.append(' - ')
-
-                pagingControls.find('a').on('click', function() {
-                    var self = $(this)
-                        , page = self.data('page')
-                    ;
-                    getData(page);
+                pagingControls.find('select[name="rows"]').on('change', function() {
+                    config.rows = $(this).val();
+                    getData();
                 });
 
+                setCookie();
             }
-
-            var rowList = [5, 10, 15, 25, 50, 100, 250, 500];
-            var rowOptions = '';
-            var rowSelected = '';
-
-            for (i = 0; i < rowList.length; i++) {
-                if (config.rows == rowList[i]) {
-                    rowSelected = ' selected="selected"';
-                } else {
-                    rowSelected = '';
-                }
-
-                rowOptions += '<option value="'+rowList[i]+'"'+ rowSelected +'>'+rowList[i]+'</option>';
-
-                if (rowList[i] >= config.dataLength) {
-                    break;
-                }
-
-                if ((i + 1) != rowList.length && config.rows > rowList[i] && config.rows < rowList[i+1]) {
-                    //add config.rows to the list
-                    rowOptions += '<option value="'+config.rows+'" selected="selected">'+config.rows+'</option>';
-                }
-            }
-
-            pagingControls.append('Rows: <select name="rows">'+rowOptions+'</select>');
-
-            pagingControls.find('select[name="rows"]').on('change', function() {
-                config.rows = $(this).val();
-                getData();
-            });
-
-            console.log('right before setCookie')
-            setCookie();
 
         }
 
@@ -580,10 +585,28 @@
         sort = function(col, dir) {
             config.sortedOn = col || config.sortedOn;
             config.sortedDir = dir || config.sortedDir;
+            var header = null;
+
+            config.table.find('thead > tr > th').each(function() {
+                var self = $(this);
+                if (self.data('name') == config.sortedOn) {
+                    header = self;
+                    return false;
+                }
+            });
+
+            // if we couldn't find the header... which shouldn't happen.
+            if (header == null) {
+                return;
+            }
+
+            var sortIndicator = header.find('span.order');
+
+            sortIndicator.removeClass('asc desc').addClass(config.sortedDir);
 
             if (config.dataLength <= config.data.length) {
                 config.data.sort(getSortFunction(config.sortedOn, !!(config.sortedDir == 'asc')));
-                render();
+                render(renderModes.BODY);
             } else {
                 config.page = 1;
                 getData();
@@ -614,7 +637,7 @@
                     config.sortedDir = dir;
                     config.rows = rows;
                     config.data = returnData.list.list; // odd formatting I know, but it's what I decided on.
-                    render();
+                    render(renderModes.BODY);
                 }).fail(function() {
                     alert('Failed loading grid data.');
                 })
@@ -623,8 +646,6 @@
         }
 
         setCookie = function() {
-            console.log('got to set cookie!');
-
             if (!config.persist) {
                 return;
             }
@@ -635,8 +656,6 @@
                 , page: config.page
                 , rows: config.rows
             };
-
-            console.log(value);
 
             $.cookie(cookieName, JSON.stringify(value), {expires: 1});
         }
@@ -690,6 +709,9 @@
 
         if (config.persist && cookieValue !== undefined) {
             cookieValue = $.parseJSON(cookieValue);
+            if (cookieValue.rows !== undefined) {
+                config.rows = parseInt(cookieValue.rows);
+            }
             if (cookieValue.sortedOn !== undefined && cols[cookieValue.sortedOn] !== undefined) {
                 config.sortedOn = cookieValue.sortedOn;
             }
@@ -703,16 +725,18 @@
                     config.page = cookieValue.page;
                 }
             }
-            // TODO: need to fix this... redundant...
-            // TODO: if numPages == 1
-            render(true);
-            if (numPages == 1) {
+
+            render(renderModes.HEAD);
+
+            if (numPages == 1 && config.sortedOn != '') {
                 sort();
-            } else {
+            } else if (numPages > 1) {
                 getData();
+            } else {
+                render(renderModes.BODY);
             }
         } else {
-            render(true);
+            render(renderModes.HEADBODY);
         }
 
         this.data('grid', this);
