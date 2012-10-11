@@ -40,12 +40,9 @@ grails.project.dependency.resolution = {
 
     plugins {
         runtime ":hibernate:$grailsVersion"
-        //runtime ":jquery:1.7.2"
-        //runtime ":jquery-ui:1.8.15"
-        //runtime ":jquery-json:2.2.2" // TODO: upgrade this plugin
-        //runtime ":modernizr:2.6.2"
         runtime ":lesscss-resources:1.3.0.3"
         runtime ":resources:1.1.6"
+        // TODO: All these break... figure out what's going on there.
         //runtime ":zipped-resources:1.0"
         //runtime ":yui-minify-resources:0.1.5"
         //runtime ":cached-resources:1.0"
@@ -53,10 +50,14 @@ grails.project.dependency.resolution = {
         runtime ":spring-security-core:1.2.7.3"
         runtime ":mail:1.0"
 
-        build ":tomcat:$grailsVersion"
-
         runtime ":database-migration:1.1"
 
+        build ":tomcat:$grailsVersion"
+
         compile ':cache:1.0.0'
+        compile ":executor:0.3"
+        compile ":cometd:0.2.2"
+        compile ":jms:1.2"
+        compile ":activemq:0.4.1"
     }
 }
