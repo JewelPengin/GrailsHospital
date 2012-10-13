@@ -25,7 +25,7 @@ class NavService {
 
     def getCurrentPageNav(request, nav = get()) {
         for (item in nav) {
-            if (item.url == request.request.getRequestURI()) {
+            if (item.url == request.getRequestURI()) {
                 return item
             }
             def childNav = getCurrentPageNav(request, item.children)

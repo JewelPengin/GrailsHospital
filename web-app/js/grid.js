@@ -475,8 +475,6 @@
 
                 pagingControls = container.find('div.grid-paging');
                 if (!pagingControls.length) {
-                    console.log(config.pagingLocation);
-                    console.log(container.find('.grid-' + config.pagingLocation));
                     container.find('.grid-' + config.pagingLocation).append('<div class="grid-paging"></div>');
                     pagingControls = container.find('div.grid-paging');
                 }

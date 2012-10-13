@@ -1,14 +1,15 @@
-package hospital
+package com.centurylink.hospital
 
 
 
 import grails.test.mixin.*
+import org.junit.*
 
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
-@TestFor(NavService)
-class NavServiceTests {
+@TestFor(TestAtmosphereService)
+class TestAtmosphereServiceTests {
 
     void testSomething() {
         fail "Implement me"

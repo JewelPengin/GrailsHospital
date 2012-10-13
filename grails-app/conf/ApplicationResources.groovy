@@ -1,6 +1,7 @@
 modules = {
     jquery {
         resource url: '/js/jquery-1.8.2.min.js', disposition: 'head'
+        resource url: '/js/jquery.json-2.3.js', disposition: 'head'
     }
 
     jqueryUi {
@@ -13,10 +14,24 @@ modules = {
         resource url: '/js/modernizr.js', disposition: 'head'
     }
 
-    core {
-        dependsOn 'jquery', 'jqueryUi', 'modernizr'
+    cookie {
+        dependsOn 'jquery'
+        resource url: '/js/jquery.cookie.js', disposition: 'head'
+    }
 
-        resource url: '/js/json2.js'
+    /*cometd {
+        dependsOn 'jquery', 'cookie'
+        resource url: '/js/cometd.js'
+        resource url: '/js/jquery.cometd.js'
+        //resource url: '/js/jquery.cometd-ack.js'
+        //resource url: '/js/jquery.cometd-reload.js'
+        //resource url: '/js/jquery.cometd-timestamp.js'
+        //resource url: '/js/jquery.cometd-timesync.js'
+        resource url: '/js/cometd-subscriptions.js'
+    }*/
+
+    core {
+        dependsOn 'jquery', 'jqueryUi', 'modernizr', 'atmosphere'
 
         resource url: '/css/reset.less', attrs:[rel: "stylesheet/less", type:'css'], bundle:'bundle_core'
         resource url: '/css/main.less', attrs:[rel: "stylesheet/less", type:'css'], bundle:'bundle_core'
@@ -26,12 +41,11 @@ modules = {
         resource url: '/css/testing.css'
 
         resource url: '/js/toolbar.js'
+        //resource url: '/js/cometd-init.js'
     }
 
     grid {
-        dependsOn 'core'
-
-        resource url: '/js/jquery.cookie.js'
+        dependsOn 'core', 'cookie'
         resource url: '/js/date.js'
         resource url: '/js/grid.js'
     }
