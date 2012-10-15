@@ -12,7 +12,7 @@ class DoctorController {
 
 	def index() {
 		redirect(action: "list", params: params)
-		broadcaster['/atmosphere/sample'].broadcast("Hit the doctor index!")
+		broadcaster['/atmosphere/sample'].broadcast([testing: 'my object'])
 	}
 
 	def list(Integer max) {
