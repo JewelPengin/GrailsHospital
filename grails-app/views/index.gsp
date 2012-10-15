@@ -4,16 +4,14 @@
         <title>View Testing</title>
         <script type="text/javascript">
             function callback(response) {
-              if (response.status == 200) {
-                var data = response.responseBody;
-                if (data.length > 0) {
+                if (response.status == 200) {
+                    var data = $.parseJSON(response.responseBody);
                     console.log(data);
                 }
-              }
             }
 
-            var url = 'atmosphere/sample';
-            $.atmosphere.subscribe(url, callback, $.atmosphere.request = {transport:'streaming'});
+            $.atmosphere.subscribe('/atmosphere/notification/all', callback, $.atmosphere.request = {transport: 'streaming'});
+            $.atmosphere.subscribe('/atmosphere/notification/jonathan', callback, $.atmosphere.request = {transport: 'streaming'});
         </script>
     </head>
     <body>

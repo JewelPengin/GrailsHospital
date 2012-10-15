@@ -1,1 +1,3 @@
-<atmosphere-handlers />
+<atmosphere-handlers>
+  <atmosphere-handler context-root='/atmosphere/notification/all' class-name='com.centurylink.hospital.GenericAtmosphereHandler' />
+</atmosphere-handlers>

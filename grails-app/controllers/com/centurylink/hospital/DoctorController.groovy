@@ -10,9 +10,13 @@ class DoctorController {
 
 	static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
+	def springSecurityService
+
 	def index() {
 		redirect(action: "list", params: params)
-		broadcaster['/atmosphere/sample'].broadcast([testing: 'my object'])
+		//println broadcaster
+		broadcaster['/atmosphere/notification/all'].broadcast('This was broadcasted to everyone!')
+		broadcaster['/atmosphere/notification/' + springSecurityService.principal.username].broadcast('This was broadcasted only to ' + springSecurityService.principal.username)
 	}
 
 	def list(Integer max) {
