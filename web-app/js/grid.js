@@ -1,3 +1,9 @@
+/*******
+
+Many thanks to Tim Schottler who provided inspiration and a fair amount of code snippets
+
+*******/
+
 (function($) {
     var renderModes = {
         HEAD: 0

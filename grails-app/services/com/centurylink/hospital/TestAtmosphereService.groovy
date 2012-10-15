@@ -7,7 +7,7 @@ class TestAtmosphereService {
     static atmosphere = [mapping: '/atmosphere/sample']
 
     def onRequest = { event ->
-        log.info "onRequest, $event"
+        println "onRequest, $event"
 
         // Mark this connection as suspended.
         event.suspend()
@@ -15,10 +15,10 @@ class TestAtmosphereService {
 
     def onStateChange = { event ->
         if (event.cancelled){
-            log.info "onStateChange, cancelling $event"
+            println "onStateChange, cancelling $event"
         }
         else if (event.message) {
-            log.info "onStateChange, message: ${event.message}"
+            println "onStateChange, message: ${event.message}"
 
             event.resource.response.writer.with {
                 write event.message
