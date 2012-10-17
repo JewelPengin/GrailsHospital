@@ -13,8 +13,7 @@ class SuccessfulAuthListener implements ApplicationListener<AuthenticationSucces
 
 		def servlet = servletContext[com.odelia.grails.plugins.atmosphere.StratosphereServlet.ATMOSPHERE_PLUGIN_ATMOSPHERE_SERVLET]
 
-		// TODO: lookup handlers
-
+		// TODO: Instead of swallowing the exception, we should actually do if(handlerExists)... but need to figure out how to do that.
 		try {
 			servlet.addAtmosphereHandler('/atmosphere/notification/' + loggingInUsername, contextHolder.getBean('genericAtmosphereHandler'))
 		} catch (java.lang.Exception ex) { /* intentionally do nothing... */ }

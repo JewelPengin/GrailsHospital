@@ -1,52 +1,41 @@
 modules = {
-    jquery {
-        resource url: '/js/jquery-1.8.2.min.js', disposition: 'head'
-        resource url: '/js/jquery.json-2.3.js', disposition: 'head'
-    }
+	jquery {
+		resource url: '/js/jquery-1.8.2.min.js', disposition: 'head'
+		resource url: '/js/jquery.json-2.3.js', disposition: 'head'
+	}
 
-    jqueryUi {
-        dependsOn 'jquery'
-        resource url: '/js/jquery-ui-1.9.0.min.js', disposition: 'head'
-        resource url: '/css/cupertino/jquery-ui-1.8.23.custom.css'
-    }
+	jqueryUi {
+		dependsOn 'jquery'
+		resource url: '/js/jquery-ui-1.9.0.min.js', disposition: 'head'
+		resource url: '/css/cupertino/jquery-ui-1.8.23.custom.css'
+	}
 
-    modernizr {
-        resource url: '/js/modernizr.js', disposition: 'head'
-    }
+	modernizr {
+		resource url: '/js/modernizr.js', disposition: 'head'
+	}
 
-    cookie {
-        dependsOn 'jquery'
-        resource url: '/js/jquery.cookie.js', disposition: 'head'
-    }
+	cookie {
+		dependsOn 'jquery'
+		resource url: '/js/jquery.cookie.js', disposition: 'head'
+	}
 
-    /*cometd {
-        dependsOn 'jquery', 'cookie'
-        resource url: '/js/cometd.js'
-        resource url: '/js/jquery.cometd.js'
-        //resource url: '/js/jquery.cometd-ack.js'
-        //resource url: '/js/jquery.cometd-reload.js'
-        //resource url: '/js/jquery.cometd-timestamp.js'
-        //resource url: '/js/jquery.cometd-timesync.js'
-        resource url: '/js/cometd-subscriptions.js'
-    }*/
+	core {
+		dependsOn 'jquery', 'jqueryUi', 'modernizr', 'atmosphere'
 
-    core {
-        dependsOn 'jquery', 'jqueryUi', 'modernizr', 'atmosphere'
+		//resource url: '/security/info', attrs:[type: 'js'], disposition: 'head'
+		resource url: '/css/reset.less', attrs:[rel: "stylesheet/less", type:'css'], bundle:'bundle_core'
+		resource url: '/css/main.less', attrs:[rel: "stylesheet/less", type:'css'], bundle:'bundle_core'
+		resource url: '/css/ie7.less', attrs:[rel: "stylesheet/less", type:'css'],
+			wrapper: { s -> "<!--[if lt IE 8]>$s<![endif]-->" }
 
-        resource url: '/css/reset.less', attrs:[rel: "stylesheet/less", type:'css'], bundle:'bundle_core'
-        resource url: '/css/main.less', attrs:[rel: "stylesheet/less", type:'css'], bundle:'bundle_core'
-        resource url: '/css/ie7.less', attrs:[rel: "stylesheet/less", type:'css'],
-            wrapper: { s -> "<!--[if lt IE 8]>$s<![endif]-->" }
+		resource url: '/css/testing.css'
 
-        resource url: '/css/testing.css'
+		resource url: '/js/toolbar.js'
+	}
 
-        resource url: '/js/toolbar.js'
-        //resource url: '/js/cometd-init.js'
-    }
-
-    grid {
-        dependsOn 'core', 'cookie'
-        resource url: '/js/date.js'
-        resource url: '/js/grid.js'
-    }
+	grid {
+		dependsOn 'core', 'cookie'
+		resource url: '/js/date.js'
+		resource url: '/js/grid.js'
+	}
 }

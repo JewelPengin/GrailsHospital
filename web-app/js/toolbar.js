@@ -31,6 +31,7 @@
 			subs.css('display', 'none');
 		});
 
+
 		/* Notification Dropdown Functions */
 
 		var notificationDropdown = menu.find('ul.notifications');
@@ -46,5 +47,29 @@
 				}
 			}
 		});
+
+		var notificationCallback = function(response) {
+			if (response.status == 200) {
+				var data = $.parseJSON(response.responseBody);
+				var html = '<li>' +
+					'<div class="message-icon">' +
+						'<span class="icon icon-'+ data.type +'"></span>' +
+					'</div>' +
+					'<div class="message-text">' +
+						'<a href="'+ (data.link == '' ? '#' : data.link) +'">'+ data.message +'</a>' +
+					'</div>' +
+				'</li>';
+				notificationDropdown.prepend(html);
+			}
+		}
+
+		securityInfo = securityInfo || {"loggedIn": false}
+
+		$.atmosphere.subscribe('/atmosphere/notification/all', notificationCallback, $.atmosphere.request = {transport: 'streaming'});
+
+		if (securityInfo.loggedIn) {
+			$.atmosphere.subscribe('/atmosphere/notification/' + securityInfo.username, notificationCallback, $.atmosphere.request = {transport: 'streaming'});
+		}
+
 	});
 })();

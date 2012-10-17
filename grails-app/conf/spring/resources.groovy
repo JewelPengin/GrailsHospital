@@ -5,10 +5,12 @@ import com.centurylink.hospital.GenericAtmosphereHandler
 
 beans = {
 	genericAtmosphereHandler(GenericAtmosphereHandler)
+
 	applicationContextHolder(ApplicationContextHolder) { bean ->
 		bean.factoryMethod = 'getInstance'
 	}
+
 	successfulAuthListener(SuccessfulAuthListener) {
-        contextHolder = ref("applicationContextHolder")
+        contextHolder = ref('applicationContextHolder')
 	}
 }

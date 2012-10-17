@@ -10,13 +10,12 @@ class DoctorController {
 
 	static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-	def springSecurityService
+	def notificationService
 
 	def index() {
+		notificationService.send('Someone hit the doctor index', 'info', '')
+
 		redirect(action: "list", params: params)
-		//println broadcaster
-		broadcaster['/atmosphere/notification/all'].broadcast('This was broadcasted to everyone!')
-		broadcaster['/atmosphere/notification/' + springSecurityService.principal.username].broadcast('This was broadcasted only to ' + springSecurityService.principal.username)
 	}
 
 	def list(Integer max) {
@@ -54,6 +53,7 @@ class DoctorController {
 	}
 
 	def show(Long id) {
+		notificationService.send('You hit the doctor show page', 'success', '/doctor/show/' + id, 'current')
 		def doctorInstance = Doctor.get(id)
 		if (!doctorInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'doctor.label', default: 'Doctor'), id])

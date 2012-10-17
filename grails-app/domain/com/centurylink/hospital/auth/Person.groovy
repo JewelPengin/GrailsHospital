@@ -12,7 +12,7 @@ class Person {
 	boolean accountLocked
 	boolean passwordExpired
 
-	static hasMany = [settings: com.centurylink.hospital.UserSetting]
+	static hasMany = [settings: com.centurylink.hospital.UserSetting, notifications: com.centurylink.hospital.Notification]
 
 	static constraints = {
 		username blank: false, unique: true

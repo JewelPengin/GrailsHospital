@@ -2,17 +2,6 @@
     <head>
         <meta name="layout" content="main"/>
         <title>View Testing</title>
-        <script type="text/javascript">
-            function callback(response) {
-                if (response.status == 200) {
-                    var data = $.parseJSON(response.responseBody);
-                    console.log(data);
-                }
-            }
-
-            $.atmosphere.subscribe('/atmosphere/notification/all', callback, $.atmosphere.request = {transport: 'streaming'});
-            $.atmosphere.subscribe('/atmosphere/notification/jonathan', callback, $.atmosphere.request = {transport: 'streaming'});
-        </script>
     </head>
     <body>
         <header>
