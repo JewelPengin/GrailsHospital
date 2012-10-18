@@ -800,7 +800,7 @@ TODO: Persisting view profiles to a user record
 			, persist: true
 		}, config);
 
-		container.css('padding-bottom', '1px'); // hack for missing bottom border?
+		container.css('padding-bottom', '1px'); // NOTE: hack for missing bottom border?
 
 		container.empty();
 
