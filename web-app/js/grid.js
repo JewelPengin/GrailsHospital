@@ -2,13 +2,18 @@
 
 Many thanks to Tim Schottler who provided inspiration and a fair amount of code snippets
 
+TODO: View profiles
+TODO: Persisting view profiles to a user record
+
 *******/
 
 (function($) {
 	var renderModes = {
-		HEAD: 0
-		, BODY: 1
+		BODY: 0
+		, HEAD: 1
 		, HEADBODY: 2
+		, FULL: 3
+		, SKELETON: 4
 	}
 	var renderers = {
 		string: function(str, config) {
@@ -31,6 +36,7 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 				wasTruncated = true;
 			}
 
+			// TODO: implement ellipsis instead of truncation.
 			return '<div class="table-blob"' +
 					' data-full="' + $('<div/>').html(str).text() + '"' +
 					' data-length="' + numChars + '"' +
@@ -173,6 +179,7 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 			, identifier = container.prop('id')
 			, render
 			, getSortFunction
+			, columnSorter
 			, cols = {} // name/value pair for easier lookup
 			, cookieName = 'grid_' + identifier + '_persist'
 			, cookieValue = $.cookie(cookieName) || undefined
@@ -244,36 +251,177 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 			};
 		}
 
+		columnSorter = function(a, b) {
+			if ((a.hidden && b.hidden) || (!a.hidden && !b.hidden)) {
+				if (a.position > b.position) {
+					return 1;
+				} else if (a.position < b.position) {
+					return -1
+				}
+			} else if (!a.hidden && b.hidden) {
+				return -1;
+			} else if (a.hidden && !b.hidden) {
+				return 1;
+			}
+
+			return 0;
+		}
+
 		render = function(renderMode) {
 			var tbody
 				, numLinks = 2
+				, overlay
 				, pagingControls
-				, settingControls
 				, usePaging
-				, renderMode = renderMode === undefined ? renderModes.HEADBODY : renderMode;
+				, renderMode = renderMode === undefined ? renderModes.HEADBODY : renderMode
+				, initialHTML = '' +
+					'<div class="grid-top">' +
+						'<div class="grid-settings-icon"></div>' +
+					'</div>' +
+					'<div class="grid-table-container">' +
+						'<table><thead><tr></tr></thead><tbody></tbody><tfoot></tfoot></table>' +
+					'</div>' +
+					'<div class="grid-bottom"></div>' +
+					'<div class="grid-overlay"></div>' +
+					'<div class="grid-settings"></div>'
 			;
 
-			if (renderMode == renderModes.HEAD || renderMode == renderModes.HEADBODY) {
+			if (renderMode == renderModes.FULL || renderMode == renderModes.SKELETON) {
 				container.empty();
-				container.append('<div class="grid-top"></div><table><thead><tr></tr></thead><tbody></tbody><tfoot></tfoot></table><div class="grid-bottom"></div>');
+				container.append(initialHTML);
 				config.table = container.find('table:first');
-				var thead = config.table.find('thead > tr');
-				tbody = config.table.find('tbody');
+				overlay = container.find('.grid-overlay');
 
-				for (var c = 0; c < config.columns.length; c++) {
-					var col = config.columns[c];
-					var colOrder = config.sortedOn == col.name ? config.sortedDir : col.order;
+				// sort the columns
+				config.columns.sort(columnSorter);
 
-					var header = $('<th data-name="' + col.name + '">' +
-						(config.reorderableColumns ? '<div class="drag"></div>' : '') +
-						col.label +
-						(col.sortable ? ' <span class="order ' + colOrder  + '"></span>' : '') +
-						//(config.reorderableColumns ? '<div class="remove"></div>' : '') +
-						'<div class="resize"></div>' +
-					'</th>');
 
-					thead.append(header);
+				/**** grid settings button ****/
+				var gridSettings = container.find('.grid-settings');
+
+				gridSettings.append('<div class="settings-row settings-title">Settings</div>');
+
+				var rowList = [5, 10, 15, 25, 50, 100, 250, 500];
+				var rowOptions = '';
+				var rowSelected = '';
+
+				for (i = 0; i < rowList.length; i++) {
+					if (config.rows == rowList[i]) {
+						rowSelected = ' selected="selected"';
+					} else {
+						rowSelected = '';
+					}
+
+					rowOptions += '<option value="'+rowList[i]+'"'+ rowSelected +'>'+rowList[i]+'</option>';
+
+					if (rowList[i] >= config.dataLength) {
+						break;
+					}
+
+					if ((i + 1) != rowList.length && config.rows > rowList[i] && config.rows < rowList[i+1]) {
+						//add config.rows to the list
+						rowOptions += '<option value="'+config.rows+'" selected="selected">'+config.rows+'</option>';
+					}
 				}
+
+				gridSettings.append('<div class="settings-row">Rows: <select name="rows">'+rowOptions+'</select></div>');
+
+				if (config.reorderableColumns) {
+					var hiddenColumns = [];
+					var displayedColumns = [];
+					for (var c = 0; c < config.columns.length; c++) {
+						var col = config.columns[c];
+						var liStr = '<li data-name="'+ col.name +'">' + col.label + '</li>';
+						if (col.hidden) {
+							hiddenColumns += liStr;
+						} else {
+							displayedColumns += liStr;
+						}
+					}
+
+					gridSettings.append('<div class="settings-row">' +
+						'<div class="settings-column">' +
+							'<div class="title">Columns Displayed</div>' +
+							'<div class="content">' +
+								'<ul class="columns-sortable displayed-columns">' + displayedColumns + '</ul>' +
+							'</div>' +
+						'</div>' +
+						'<div class="settings-column">' +
+							'<div class="title">Columns Hidden</div>' +
+							'<div class="content">' +
+								'<ul class="columns-sortable hidden-columns">' + hiddenColumns + '</ul>' +
+							'</div>' +
+						'</div>' +
+					'</div>');
+
+					gridSettings.find('.columns-sortable').sortable({
+						connectWith: '.columns-sortable'
+						, revert: 100
+						, cancel: '.ui-state-disabled'
+						//, helper: 'clone'
+					});
+				}
+
+				gridSettings.append('<div class="settings-row"><a href="#" class="settings-clear-cookie button">Clear Saved Grid Settings</a></div>');
+
+				gridSettings.find('a.settings-clear-cookie').on('click', function(e) {
+					// TODO: provide some visual feedback that the settings have been cleared
+
+					$.removeCookie(cookieName);
+					e.preventDefault();
+				});
+
+				gridSettings.append('<div class="buttons settings-row">' +
+					'<a href="#" class="settings-cancel button">Cancel</a> ' +
+					'<a href="#" class="settings-apply button">Apply</a>' +
+				'</div>');
+
+				gridSettings.find('a.settings-cancel').on('click', function(e) {
+					// TODO: reset values
+
+					overlay.fadeOut();
+					gridSettings.fadeOut();
+					e.preventDefault();
+				});
+
+				gridSettings.find('a.settings-apply').on('click', function(e) {
+					// TODO: optimize this please!
+					for (var c = 0; c < config.columns.length; c++) {
+						config.columns[c].hidden = true;
+						gridSettings.find('.displayed-columns li').each(function(idx){
+							var self = $(this);
+							var myName = self.data('name');
+							if (myName == config.columns[c].name) {
+								config.columns[c].position = idx;
+								config.columns[c].hidden = false;
+								return false;
+							}
+						});
+					}
+					// TODO: only if order has changed.
+					render(renderModes.HEADBODY);
+
+					// TODO: only if value has changed
+					config.rows = gridSettings.find('select[name="rows"]').val();
+					getData();
+
+					overlay.fadeOut();
+					gridSettings.fadeOut();
+					e.preventDefault();
+				});
+
+				container.find('.grid-settings-icon').on('click', function() {
+					// TODO: save initial settings for canceling and saving
+					overlay.fadeIn();
+					gridSettings.fadeIn().position({
+						my: 'center top'
+						, at: 'center top+20'
+						, of: container
+						, collision: 'none'
+					});
+				});
+
+				/**** table event handlers ****/
 
 				config.table.on('click', 'th', function() {
 					var self = $(this)
@@ -293,22 +441,6 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 
 					}
 
-				}).on('mouseover', 'th', function() {
-					var self = $(this);
-					self.children('.drag, .remove').show();
-				}).on('mouseout', 'th', function() {
-					var self = $(this);
-					self.children('.drag, .remove').hide();
-				}).on('click', 'th > .remove', function() {
-					var self = $(this);
-					var columnName = self.parent('th').data('name');
-					for (var c = 0; c < config.columns.length; c++) {
-						if (config.columns[c].name == columnName) {
-							config.columns.splice(c, 1);
-							break;
-						}
-					}
-					render(renderModes.HEADBODY);
 				}).on('click', 'td', function() {
 					var self = $(this);
 					var rowIdx = self.parents('tr:first').data('idx');
@@ -372,24 +504,33 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 						self.unbind('mousemove');
 						container.children('#' + identifier + 'TooltipContainer').hide().html("");
 					}
-				}).on('sortupdate', function() {
-					var headers = config.table.find('thead > tr:first > th');
-					var newColumnOrder = [];
-					headers.each(function() {
-						var self = $(this);
-						newColumnOrder.push(cols[self.data('name')]);
-					});
-					config.columns = newColumnOrder;
-					render(renderModes.HEADBODY);
 				});
 
-				if (config.reorderableColumns) {
-					config.table.addClass('reorderable');
-					config.table.sortable({
-						items: 'th'
-						, helper: 'clone'
-						, handle: '.drag'
-					});
+			}
+
+			tbody = config.table.find('tbody');
+
+			if (renderMode == renderModes.HEAD || renderMode == renderModes.HEADBODY || renderMode == renderModes.FULL) {
+				var thead = config.table.find('thead > tr');
+
+				// sort the columns
+				config.columns.sort(columnSorter);
+
+				thead.empty();
+
+				for (var c = 0; c < config.columns.length; c++) {
+					var col = config.columns[c];
+					if (col.hidden) { continue; }
+
+					var colOrder = config.sortedOn == col.name ? config.sortedDir : col.order;
+
+					var header = $('<th data-name="' + col.name + '">' +
+						col.label +
+						(col.sortable ? ' <span class="order ' + colOrder  + '"></span>' : '') +
+						'<div class="resize"></div>' +
+					'</th>');
+
+					thead.append(header);
 				}
 
 				thead.find('th').resizable({
@@ -397,11 +538,9 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 					, autoHide: true
 				});
 
-			} else {
-				tbody = config.table.find('tbody')
 			}
 
-			if (renderMode == renderModes.BODY || renderMode == renderModes.HEADBODY) {
+			if (renderMode == renderModes.BODY || renderMode == renderModes.HEADBODY || renderMode == renderModes.FULL) {
 
 				tbody.empty();
 
@@ -409,63 +548,12 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 					var row = '';
 					var lastRow = ((i + 1) == config.data.length);
 					for (var c = 0; c < config.columns.length; c++) {
+						if (config.columns[c].hidden) { continue; }
 						row += '<td' + (lastRow ? ' class="last-row"' : '') + '>' +
 							config.columns[c].renderer(config.data[i][config.columns[c].name], config.columns[c]) +
 							'</td>';
 					}
 					tbody.append('<tr class="' + ((i + 1) % 2 ? 'even' : 'odd') + '" data-idx="' + i + '">' + row + '</tr>');
-				}
-
-				/**** grid settings button ****/
-
-				settingControls = container.find('div.grid-settings');
-				if (!settingControls.length) {
-					container.find('.grid-top').prepend('<div class="grid-settings"></div>');
-					settingControls = container.find('div.grid-settings');
-					settingControls.append('<div class="grid-settings-container"></div>');
-					var settingsContainer = settingControls.find('.grid-settings-container');
-
-					var rowList = [5, 10, 15, 25, 50, 100, 250, 500];
-					var rowOptions = '';
-					var rowSelected = '';
-
-					for (i = 0; i < rowList.length; i++) {
-						if (config.rows == rowList[i]) {
-							rowSelected = ' selected="selected"';
-						} else {
-							rowSelected = '';
-						}
-
-						rowOptions += '<option value="'+rowList[i]+'"'+ rowSelected +'>'+rowList[i]+'</option>';
-
-						if (rowList[i] >= config.dataLength) {
-							break;
-						}
-
-						if ((i + 1) != rowList.length && config.rows > rowList[i] && config.rows < rowList[i+1]) {
-							//add config.rows to the list
-							rowOptions += '<option value="'+config.rows+'" selected="selected">'+config.rows+'</option>';
-						}
-					}
-
-					settingsContainer.append('<div>Rows: <select name="rows">'+rowOptions+'</select></div>');
-
-					settingControls.find('select[name="rows"]').on('change', function() {
-						config.rows = $(this).val();
-						getData();
-					});
-
-					settingsContainer.append('<div><a href="#" class="clear-grid-settings button">Clear Saved Grid Settings</a></div>')
-
-					settingsContainer.find('a.clear-grid-settings').on('click', function(e) {
-						$.removeCookie(cookieName);
-						e.preventDefault();
-					});
-
-					settingControls.on('click', function() {
-						var self = $(this);
-						self.find('.grid-settings-container').fadeToggle();
-					});
 				}
 
 				makePageButton = function(page, label, buttonClass) {
@@ -676,7 +764,7 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 			var columnOrder = [];
 
 			$.each(config.columns, function() {
-				columnOrder.push(this.name);
+				columnOrder.push({name: this.name, hidden: this.hidden});
 			});
 
 			var value = {
@@ -697,7 +785,7 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 			, dataLength: 0
 			, dataUrl: ''
 			, columns: [
-				{label: 'No Columns Configured', name: 'no_columns', renderer: 'string', sortable: false, order: 'asc'}
+				{label: 'No Columns Configured', name: 'no_columns', renderer: 'string', sortable: false, order: 'asc', hidden: false, position: 0}
 			]
 			, reorderableColumns: false
 			, url: ''
@@ -716,7 +804,7 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 
 		container.empty();
 
-		// column loop - do as much as you can here to cut back re-looping
+		// NOTE: column loop - do as much as you can here to cut back re-looping
 		for (var c = 0; c < config.columns.length; c++) {
 			var col = config.columns[c];
 
@@ -729,6 +817,7 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 			col.renderer = col.renderer || col.type;
 			col.sortable = col.sortable === undefined ? true : col.sortable;
 			col.order = col.order || 'asc';
+			col.position = col.position || c;
 
 			if (typeof col.renderer === 'string') {
 				col.renderer = getRenderer(col);
@@ -756,18 +845,19 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 				}
 			}
 			if (cookieValue.columnOrder !== undefined && $.isArray(cookieValue.columnOrder)) {
-				var newColumns = [];
-				$.each(cookieValue.columnOrder, function(idx) {
-					for (var c = 0; c < config.columns.length; c++) {
-						if (config.columns[c].name == this) {
-							newColumns.push(config.columns.splice(c, 1)[0]);
-							break;
+				for (var c = 0; c < config.columns.length; c++) {
+					//config.columns[c].hidden = true;
+					$.each(cookieValue.columnOrder, function(idx) {
+						if (config.columns[c].name == this.name) {
+							config.columns[c].position = idx;
+							config.columns[c].hidden = this.hidden;
+							return false;
 						}
-					}
-				});
-				config.columns = newColumns.concat(config.columns);
+					});
+				}
 			}
 
+			render(renderModes.SKELETON);
 			render(renderModes.HEAD);
 
 			if (numPages == 1 && config.sortedOn != '') {
@@ -778,7 +868,7 @@ Many thanks to Tim Schottler who provided inspiration and a fair amount of code 
 				render(renderModes.BODY);
 			}
 		} else {
-			render(renderModes.HEADBODY);
+			render(renderModes.FULL);
 		}
 
 		this.data('grid', this);
