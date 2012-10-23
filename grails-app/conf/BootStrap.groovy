@@ -7,6 +7,8 @@ import com.centurylink.hospital.Drug
 import com.centurylink.hospital.Room
 import com.centurylink.hospital.Prescription
 import com.centurylink.hospital.Patient
+import com.centurylink.hospital.Notification
+
 class BootStrap {
 
 	def springSecurityService
@@ -55,8 +57,9 @@ class BootStrap {
 				new Doctor(data).save(failOnError:true, flush:true)
 		}
 		/*** Drugs***/
-		['advil', 'ibuprofen', 'nyquil', 'neosporin', 'centrum', 'fishoil'].each {drugname ->
-			def druglist = Drug.findByDrugName(drugname)?: new Drug(drugName: drugname).save(failOnError:true, flush:true)}
+		['advil', 'ibuprofen', 'nyquil', 'neosporin', 'centrum', 'fishoil'].each { drugname ->
+			def druglist = Drug.findByDrugName(drugname)?: new Drug(drugName: drugname).save(failOnError:true, flush:true)
+		}
 
 
 		assert Doctor.count() == 5
@@ -76,19 +79,18 @@ class BootStrap {
 				, [roomNumber: 9]
 				, [roomNumber: 10]
 		].each { data ->
-
-			def room = new Room(data)
-			if (!room.validate()) {
-				room.errors.allErrors.each {
-					println it
-				}
-			} else {
-				room.save(flush: true)
-			}
-
+			def room = new Room(data).save(failOnError: true, flush: true)
 		}
 
 		assert Room.count() == 10
+
+		/*** Notifications ***/
+		[[message: 'Test error message.', type: 'error', link: '']
+			, [message: 'Test info message.', type: 'info', link: '']
+			, [message: 'Test success message.', type: 'success', link: '']
+		].each { data ->
+			new Notification(data).save(failOnError: true, flush: true)
+		}
 
 	}
 }

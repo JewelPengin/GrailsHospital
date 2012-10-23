@@ -22,7 +22,6 @@ modules = {
 	core {
 		dependsOn 'jquery', 'jqueryUi', 'modernizr', 'atmosphere'
 
-		//resource url: '/security/info', attrs:[type: 'js'], disposition: 'head'
 		resource url: '/css/reset.less', attrs:[rel: "stylesheet/less", type:'css'], bundle:'bundle_core'
 		resource url: '/css/main.less', attrs:[rel: "stylesheet/less", type:'css'], bundle:'bundle_core'
 		resource url: '/css/ie7.less', attrs:[rel: "stylesheet/less", type:'css'],
