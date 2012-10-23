@@ -22,7 +22,7 @@
 					</cl:field>
 
 					<cl:field label="Password" for="password">
-						<input type="text" name="j_password" id="password"/>
+						<input type="password" name="j_password" id="password"/>
 					</cl:field>
 
 					<cl:field label="Remember Me" for="remember_me">

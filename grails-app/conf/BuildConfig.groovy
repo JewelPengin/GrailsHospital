@@ -60,7 +60,7 @@ grails.project.dependency.resolution = {
         compile ':cache:1.0.0'
         compile ":executor:0.3"
         //compile ":cometd:0.2.2"
-        //compile ":svn:1.0.2"
+        compile ":svn:1.0.2"
         compile ":atmosphere:0.4.2.1"
         compile ":activemq:0.4.1"
         compile ":jms:1.2"
