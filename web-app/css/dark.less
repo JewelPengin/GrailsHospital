@@ -1,0 +1,268 @@
+@import "darkColours.less";
+
+body {
+	background-color: @background;
+	color: @color;
+
+	> footer {
+		text-align: center;
+		margin: 10px 0px;
+	}
+}
+
+a {
+	color: @link;
+
+	&:visited {
+		color: @link;
+	}
+}
+
+div#body {
+
+	> header {
+
+		> nav > ul  {
+
+			> li {
+				background-color: @subNavBackground;
+				border-color: @subNavBackground;
+
+				> a {
+					color: @subNavHover;
+				}
+
+				&:hover {
+					background-color: @subNavHover;
+					border-color: @subNavHover;
+					> a {
+						color: @subNavBackground;
+					}
+				}
+			}
+		}
+
+		> h1 {
+			background-color: @interiorBackground;
+		}
+	}
+
+	> section {
+		background-color: @interiorBackground;
+
+	}
+
+	> footer {
+		background-color: @interiorBackground;
+		border-bottom-color: @interiorBackground;
+	}
+}
+
+header#toolbar {
+	background-color: @toolbarBackground;
+
+	> nav ul  {
+
+		li {
+			border-right-color: @background;
+
+			&:first-child {
+				border-left-color: @background;
+			}
+
+			a {
+				color: @toolbarLink;
+			}
+
+			&:hover {
+				background-color: @toolbarLink;
+				> a {
+					color: @toolbarBackground;
+				}
+			}
+
+			ul {
+				background-color: @toolbarBackground;
+
+				&.notifications {
+
+					li {
+						background-color: @notificationBackground;
+
+						a {
+							color: @notificationText;
+						}
+
+						&:hover {
+							background-color: @notificationHighlight;
+
+							a {
+								color: @notificationText;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+#login {
+
+	> .header {
+		background-color: @orange;
+	}
+
+	> .body {
+		background-color: @interiorBackground;
+	}
+}
+
+.grid-container {
+
+	.grid-overlay {
+		background-color: @gridSettingsOverlay;
+	}
+
+	.grid-settings {
+		background-color: @gridSettingsBackground;
+		border-color: @gridSettingsBorder;
+
+		> .settings-title {
+			font-size: 20px;
+			border-bottom-color: @gridSettingsBorder;
+		}
+
+		.columns-sortable {
+			background-color: @gridSettingsBackground2;
+
+			> li {
+				border-color: @gridSettingsBorder;
+				color: @gridSettingsBackground2;
+				background-color: @gridSettingsBackground3;
+			}
+		}
+
+	}
+}
+
+table {
+
+	th {
+		background-color: @tableHeader;
+		color: @tableHeaderText;
+		border-right-color: @tableHeaderText;
+
+		&:first-child {
+			border-left-color: @tableHeaderText;
+		}
+
+		.ui-resizable-e {
+			background-color: @tableResizeHandle;
+		}
+	}
+
+	td {
+		border-right-color: @tableBorder;
+		border-bottom-color: @tableBorder;
+
+		&:first-child {
+			border-left-color: @tableBorder;
+		}
+	}
+
+	tr {
+
+		&.even {
+			background-color: @tableEven;
+		}
+
+		&.odd {
+			background-color: @tableOdd;
+		}
+
+		&:hover {
+			background-color: @tableHover;
+		}
+	}
+
+	tfoot {
+		color: @tableHeader;
+	}
+}
+
+.table-blob-tooltip {
+	background-color: @tableTooltip;
+}
+
+h1 {
+	border-bottom-color: @border;
+}
+
+/* form fields */
+
+
+input,
+textarea,
+.wysiwyg,
+select {
+	background-color: @formBackground;
+	border-color: @formBorder;
+	color: @formColour;
+
+	&.success {
+		background-color: @formSuccess;
+	}
+	&.error {
+		background-color: @formError;
+	}
+}
+
+/* buttons */
+
+.button
+, .button:visited
+, .button:active
+, .button.active
+, input.swap
+, input.swap_sort {
+	background-color: @buttonBackground;
+	color: @buttonColour;
+	border-color: @buttonBorder;
+}
+.button:hover
+, .button.hover
+, input.swap:hover
+, input.swap_sort
+, .button:active
+, .button.active {
+	background-color: @buttonColour;
+	color: @buttonBackground;
+
+}
+.button.disabled
+, .button.disabled:hover {
+	border-color: #ccc;
+	background-color: #fff;
+}
+
+/* messenger */
+
+.messages {
+
+	.errors {
+		background-color: @messageError;
+	}
+
+	.warnings {
+		background-color: @messageWarning;
+	}
+
+	.successes {
+		background-color: @messageSuccess;
+	}
+
+	.notifications {
+		background-color: @messageNotification;
+	}
+}

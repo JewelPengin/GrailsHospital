@@ -32,6 +32,10 @@ modules = {
 		resource url: '/js/toolbar.js'
 	}
 
+	darkColourScheme {
+		resource url: '/css/dark.less', attrs:[rel: "stylesheet/less", type:'css']
+	}
+
 	grid {
 		dependsOn 'core', 'cookie'
 		resource url: '/js/date.js'

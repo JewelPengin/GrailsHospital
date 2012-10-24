@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title><g:layoutTitle default="Home"/></title>
-	<r:require modules="core,grid" />
+	<r:require modules="core,grid,darkColourScheme" />
 	<script type="text/javascript" src="/security/info"></script>
 	<r:layoutResources />
 	<g:layoutHead/>
